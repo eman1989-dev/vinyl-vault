@@ -31,7 +31,7 @@ export default function RegisterPage() {
     email: "",
     password: "",
     phone: "",
-    country: "Colombia",
+    country: "Costa Rica",
     city: "",
     details: "",
   });
@@ -97,7 +97,7 @@ export default function RegisterPage() {
             value={form.phone}
             onChange={set("phone")}
             maxLength={20}
-            placeholder="+57 300 123 4567"
+            placeholder="+506 1234 5678"
             required
           />
         </div>

@@ -32,7 +32,7 @@ export default function HomePage() {
         <div className="container py-24 md:py-36 grid md:grid-cols-2 gap-10 items-center">
           <div className="animate-fade-up">
             <p className="inline-flex items-center gap-2 text-xs uppercase tracking-[0.25em] text-burnt-deep mb-6">
-              <Sparkles className="h-3.5 w-3.5" /> Desde 1998 · Bogotá
+              <Sparkles className="h-3.5 w-3.5" /> Desde 2026 · San José, Costa Rica
             </p>
             <h1 className="font-display text-5xl md:text-7xl text-brown-ink leading-[0.95] text-balance">
               La música<br />

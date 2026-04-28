@@ -14,7 +14,7 @@ import type {
 } from "@/types";
 
 export const API_BASE_URL =
-  (import.meta.env.VITE_API_URL as string) || "http://localhost:3000/api";
+  (import.meta.env.VITE_API_URL as string) || "http://localhost:5000/api/user";
 
 const delay = (ms = 250) => new Promise((r) => setTimeout(r, ms));
 
@@ -65,31 +65,32 @@ export const productsApi = {
 
 // ============= AUTH =============
 export const authApi = {
-  async login(email: string, _password: string): Promise<{ user: User; token: string }> {
-    await delay();
-    const user = mockUsers.find((u) => u.email.toLowerCase() === email.toLowerCase());
-    if (!user) throw new Error("Credenciales inválidas");
-    return { user, token: `mock-token-${user._id}` };
+  async login(email: string, password: string) {
+    return apiFetch<{ user: User; token: string }>("/login", {
+      method: "POST",
+      body: JSON.stringify({ email, password }),
+    });
   },
+
   async register(
     name: string,
     email: string,
-    _password: string,
-    extra?: { phone?: string; address?: { country?: string; city?: string; details?: string } },
-  ): Promise<{ user: User; token: string }> {
-    await delay();
-    if (mockUsers.find((u) => u.email === email.toLowerCase()))
-      throw new Error("El correo ya está registrado");
-    const user: User = {
-      _id: `u${Date.now()}`,
-      name,
-      email: email.toLowerCase(),
-      role: "user",
-      phone: extra?.phone,
-      address: extra?.address,
-    };
-    mockUsers.push(user);
-    return { user, token: `mock-token-${user._id}` };
+    password: string,
+    extra?: {
+      phone?: string;
+      address?: { country?: string; city?: string; details?: string };
+    }
+  ) {
+    return apiFetch<{ user: User; token: string }>("", {
+      method: "POST",
+      body: JSON.stringify({
+        name,
+        email,
+        password,
+        phone: extra?.phone,
+        address: extra?.address,
+      }),
+    });
   },
 };
 
