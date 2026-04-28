@@ -71,11 +71,23 @@ export const authApi = {
     if (!user) throw new Error("Credenciales inválidas");
     return { user, token: `mock-token-${user._id}` };
   },
-  async register(name: string, email: string, _password: string): Promise<{ user: User; token: string }> {
+  async register(
+    name: string,
+    email: string,
+    _password: string,
+    extra?: { phone?: string; address?: { country?: string; city?: string; details?: string } },
+  ): Promise<{ user: User; token: string }> {
     await delay();
     if (mockUsers.find((u) => u.email === email.toLowerCase()))
       throw new Error("El correo ya está registrado");
-    const user: User = { _id: `u${Date.now()}`, name, email: email.toLowerCase(), role: "user" };
+    const user: User = {
+      _id: `u${Date.now()}`,
+      name,
+      email: email.toLowerCase(),
+      role: "user",
+      phone: extra?.phone,
+      address: extra?.address,
+    };
     mockUsers.push(user);
     return { user, token: `mock-token-${user._id}` };
   },
