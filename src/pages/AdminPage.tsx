@@ -142,39 +142,6 @@ export default function AdminPage() {
           ))}
         </TabsContent>
 
-        <TabsContent value="new-product" className="mt-6">
-          <form onSubmit={createProduct} className="bg-card border border-brown-ink/10 p-6 space-y-5 max-w-3xl">
-            <div className="grid sm:grid-cols-2 gap-4">
-              <div><Label>Título / Álbum</Label><Input value={newProduct.title} onChange={(e) => setNewProduct({ ...newProduct, title: e.target.value })} maxLength={120} required /></div>
-              <div><Label>Artista</Label><Input value={newProduct.artist} onChange={(e) => setNewProduct({ ...newProduct, artist: e.target.value })} maxLength={120} required /></div>
-              <div><Label>Género</Label><Input value={newProduct.genre} onChange={(e) => setNewProduct({ ...newProduct, genre: e.target.value })} maxLength={60} required /></div>
-              <div>
-                <Label>Formato</Label>
-                <Select value={newProduct.format} onValueChange={(v: Format) => setNewProduct({ ...newProduct, format: v })}>
-                  <SelectTrigger><SelectValue /></SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="Vinyl">Vinyl</SelectItem>
-                    <SelectItem value="CD">CD</SelectItem>
-                    <SelectItem value="Cassette">Cassette</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div><Label>Año</Label><Input type="number" value={newProduct.year} onChange={(e) => setNewProduct({ ...newProduct, year: e.target.value })} min={1900} max={2100} /></div>
-              <div><Label>Precio (CRC)</Label><Input type="number" value={newProduct.price} onChange={(e) => setNewProduct({ ...newProduct, price: e.target.value })} min={0} required /></div>
-              <div><Label>Stock</Label><Input type="number" value={newProduct.stock} onChange={(e) => setNewProduct({ ...newProduct, stock: e.target.value })} min={0} required /></div>
-              <div><Label>URL de imagen</Label><Input value={newProduct.imageUrl} onChange={(e) => setNewProduct({ ...newProduct, imageUrl: e.target.value })} placeholder="https://…" required /></div>
-            </div>
-            <div>
-              <Label>Descripción</Label>
-              <Textarea value={newProduct.description} onChange={(e) => setNewProduct({ ...newProduct, description: e.target.value })} maxLength={500} rows={3} />
-            </div>
-            <Button type="submit" disabled={creating} className="bg-burnt hover:bg-burnt-deep press-shadow">
-              <Plus className="h-4 w-4 mr-2" />
-              {creating ? "Agregando…" : "Agregar al catálogo"}
-            </Button>
-          </form>
-        </TabsContent>
-
         <TabsContent value="products" className="mt-6 space-y-2">
           {products.map((p) => (
             <article key={p._id} className="bg-card border border-brown-ink/10 p-3 flex items-center gap-4">
