@@ -2,11 +2,16 @@ import { createContext, useContext, useEffect, useState, ReactNode } from "react
 import type { User } from "@/types";
 import { authApi } from "@/services/api";
 
+interface RegisterExtras {
+  phone?: string;
+  address?: { country?: string; city?: string; details?: string };
+}
+
 interface AuthCtx {
   user: User | null;
   loading: boolean;
   login: (email: string, password: string) => Promise<void>;
-  register: (name: string, email: string, password: string) => Promise<void>;
+  register: (name: string, email: string, password: string, extras?: RegisterExtras) => Promise<void>;
   logout: () => void;
 }
 
