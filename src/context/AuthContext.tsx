@@ -5,6 +5,7 @@ import { authApi } from "@/services/api";
 interface RegisterExtras {
   phone?: string;
   address?: { country?: string; city?: string; details?: string };
+  role?: "user" | "seller" | "admin";
 }
 
 interface AuthCtx {
@@ -56,8 +57,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   );
 }
 
-export const useAuth = () => {
+export function useAuth() {
   const ctx = useContext(AuthContext);
   if (!ctx) throw new Error("useAuth must be used inside AuthProvider");
   return ctx;
-};
+}
+

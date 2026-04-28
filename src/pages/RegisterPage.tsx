@@ -102,6 +102,8 @@ export default function RegisterPage() {
           />
         </div>
 
+
+
         <div className="pt-4 border-t border-brown-ink/15 space-y-4">
           <h2 className="font-display text-xl text-brown-ink">Dirección</h2>
           <div className="grid sm:grid-cols-2 gap-4">
