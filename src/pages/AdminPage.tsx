@@ -1,12 +1,33 @@
 import { useEffect, useState } from "react";
 import { ordersApi, productsApi, secondHandApi, usersApi } from "@/services/api";
-import type { Order, OrderStatus, Product, SecondHandSubmission, User } from "@/types";
+import type { Format, Order, OrderStatus, Product, SecondHandSubmission, User } from "@/types";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { CheckCircle2, Trash2 } from "lucide-react";
+import { CheckCircle2, Plus, Trash2 } from "lucide-react";
 import { formatCOP, formatDate } from "@/lib/format";
 import { toast } from "sonner";
+import { z } from "zod";
+
+const productSchema = z.object({
+  title: z.string().trim().min(2, "Título requerido").max(120),
+  artist: z.string().trim().min(1, "Artista requerido").max(120),
+  genre: z.string().trim().min(2, "Género requerido").max(60),
+  format: z.enum(["Vinyl", "CD", "Cassette"]),
+  year: z.number().int().min(1900).max(2100).optional(),
+  price: z.number().positive("Precio inválido"),
+  stock: z.number().int().min(0, "Stock inválido"),
+  description: z.string().max(500).optional(),
+  imageUrl: z.string().url("URL inválida"),
+});
+
+const emptyProduct = {
+  title: "", artist: "", genre: "", format: "Vinyl" as Format,
+  year: "", price: "", stock: "1", description: "", imageUrl: "",
+};
 
 export default function AdminPage() {
   const [products, setProducts] = useState<Product[]>([]);
