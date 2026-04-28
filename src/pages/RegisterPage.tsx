@@ -4,11 +4,9 @@ import { Disc3 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useAuth } from "@/context/AuthContext";
 import { toast } from "sonner";
 import { z } from "zod";
-import type { UserRole } from "@/types";
 
 const schema = z.object({
   name: z.string().trim().min(2, "Nombre muy corto").max(80),
@@ -23,7 +21,6 @@ const schema = z.object({
   country: z.string().trim().min(2, "País requerido").max(60),
   city: z.string().trim().min(2, "Ciudad requerida").max(60),
   details: z.string().trim().min(5, "Indica una dirección válida").max(200),
-  role: z.enum(["user", "seller", "admin"]),
 });
 
 export default function RegisterPage() {
@@ -37,7 +34,6 @@ export default function RegisterPage() {
     country: "Colombia",
     city: "",
     details: "",
-    role: "user" as UserRole,
   });
   const [loading, setLoading] = useState(false);
 
@@ -57,7 +53,6 @@ export default function RegisterPage() {
           city: parsed.data.city,
           details: parsed.data.details,
         },
-        role: parsed.data.role,
       });
       toast.success("Cuenta creada");
       navigate("/");
@@ -107,20 +102,7 @@ export default function RegisterPage() {
           />
         </div>
 
-        <div>
-          <Label>Tipo de cuenta</Label>
-          <Select value={form.role} onValueChange={(v: UserRole) => setForm({ ...form, role: v })}>
-            <SelectTrigger><SelectValue /></SelectTrigger>
-            <SelectContent>
-              <SelectItem value="user">Comprador</SelectItem>
-              <SelectItem value="seller">Vendedor</SelectItem>
-              <SelectItem value="admin">Administrador</SelectItem>
-            </SelectContent>
-          </Select>
-          <p className="text-xs text-muted-foreground mt-1 italic">
-            Demo: en producción el rol admin debería asignarse manualmente desde el backend.
-          </p>
-        </div>
+
 
         <div className="pt-4 border-t border-brown-ink/15 space-y-4">
           <h2 className="font-display text-xl text-brown-ink">Dirección</h2>
