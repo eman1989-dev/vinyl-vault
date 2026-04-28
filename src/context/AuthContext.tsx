@@ -2,11 +2,16 @@ import { createContext, useContext, useEffect, useState, ReactNode } from "react
 import type { User } from "@/types";
 import { authApi } from "@/services/api";
 
+interface RegisterExtras {
+  phone?: string;
+  address?: { country?: string; city?: string; details?: string };
+}
+
 interface AuthCtx {
   user: User | null;
   loading: boolean;
   login: (email: string, password: string) => Promise<void>;
-  register: (name: string, email: string, password: string) => Promise<void>;
+  register: (name: string, email: string, password: string, extras?: RegisterExtras) => Promise<void>;
   logout: () => void;
 }
 
@@ -33,8 +38,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     persist(user, token);
   };
 
-  const register = async (name: string, email: string, password: string) => {
-    const { user, token } = await authApi.register(name, email, password);
+  const register = async (name: string, email: string, password: string, extras?: RegisterExtras) => {
+    const { user, token } = await authApi.register(name, email, password, extras);
     persist(user, token);
   };
 
