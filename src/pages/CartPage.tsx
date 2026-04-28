@@ -31,7 +31,7 @@ export default function CartPage() {
           {items.map((item) => (
             <article key={item.productId} className="flex gap-5 bg-card border border-brown-ink/10 p-4">
               <Link to={`/producto/${item.productId}`} className="w-28 h-28 flex-shrink-0 bg-cream-deep overflow-hidden">
-                <img src={item.product?.images[0]} alt={item.product?.title} className="h-full w-full object-cover" />
+                <img src={item.product?.imageUrl} alt={item.product?.title} className="h-full w-full object-cover" />
               </Link>
               <div className="flex-1 min-w-0">
                 <p className="text-xs uppercase tracking-widest text-burnt">{item.product?.artist}</p>

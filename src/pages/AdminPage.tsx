@@ -25,8 +25,15 @@ const productSchema = z.object({
 });
 
 const emptyProduct = {
-  title: "", artist: "", genre: "", format: "Vinyl" as Format,
-  year: "", price: "", stock: "1", description: "", imageUrl: "",
+  title: "",
+  artist: "",
+  genre: "",
+  format: "Vinyl" as Format,
+  year: "",
+  price: "",
+  stock: "1",
+  description: "",
+  imageUrl: "",
 };
 
 export default function AdminPage() {
@@ -66,14 +73,20 @@ export default function AdminPage() {
 
   const createProduct = async (e: React.FormEvent) => {
     e.preventDefault();
+
     const parsed = productSchema.safeParse({
       ...newProduct,
       year: newProduct.year ? Number(newProduct.year) : undefined,
       price: Number(newProduct.price),
       stock: Number(newProduct.stock),
     });
-    if (!parsed.success) return toast.error(parsed.error.issues[0].message);
+
+    if (!parsed.success) {
+      return toast.error(parsed.error.issues[0].message);
+    }
+
     setCreating(true);
+
     try {
       await productsApi.create({
         title: parsed.data.title,
@@ -85,13 +98,15 @@ export default function AdminPage() {
         price: parsed.data.price,
         stock: parsed.data.stock,
         description: parsed.data.description,
-        images: [parsed.data.imageUrl],
+        images: [parsed.data.imageUrl], // 👈 clave para backend
         isSecondHand: false,
       });
+
       setNewProduct(emptyProduct);
       refresh();
       toast.success("Producto agregado al catálogo");
-    } catch {
+    } catch (error) {
+      console.error(error);
       toast.error("Error al crear el producto");
     } finally {
       setCreating(false);
@@ -100,17 +115,22 @@ export default function AdminPage() {
 
   return (
     <div className="container py-12">
-      <p className="text-xs uppercase tracking-[0.25em] text-burnt mb-2">Administración</p>
-      <h1 className="font-display text-5xl text-brown-ink mb-2">Panel de control</h1>
-      <p className="font-serif-body italic text-muted-foreground mb-10">
-        Gestiona el catálogo, los pedidos y las publicaciones de la comunidad.
+      <p className="text-xs uppercase tracking-[0.25em] text-burnt mb-2">
+        Administración
       </p>
+      <h1 className="font-display text-5xl text-brown-ink mb-2">
+        Panel de control
+      </h1>
 
       <div className="grid sm:grid-cols-4 gap-4 mb-10">
         <Stat label="Productos" value={products.length} />
         <Stat label="Pedidos" value={orders.length} />
         <Stat label="Usuarios" value={users.length} />
-        <Stat label="Pend. revisión" value={submissions.filter((s) => !s.approved).length} highlight />
+        <Stat
+          label="Pend. revisión"
+          value={submissions.filter((s) => !s.approved).length}
+          highlight
+        />
       </div>
 
       <Tabs defaultValue="orders">
@@ -122,16 +142,21 @@ export default function AdminPage() {
           <TabsTrigger value="users">Usuarios</TabsTrigger>
         </TabsList>
 
+        {/* ================= PEDIDOS ================= */}
         <TabsContent value="orders" className="mt-6 space-y-3">
           {orders.map((o) => (
-            <article key={o._id} className="bg-card border border-brown-ink/10 p-4 flex flex-wrap gap-4 items-center justify-between">
+            <article key={o._id} className="bg-card border p-4 flex justify-between">
               <div>
-                <p className="font-semibold text-brown-ink">#{o._id.slice(-6).toUpperCase()}</p>
-                <p className="text-sm text-muted-foreground">{formatDate(o.createdAt)} · {o.items.length} ítems</p>
+                <p className="font-semibold">#{o._id.slice(-6)}</p>
+                <p className="text-sm">{formatDate(o.createdAt)}</p>
               </div>
-              <p className="font-display text-xl text-brown-ink">{formatCOP(o.totalAmount)}</p>
+
+              <p>{formatCOP(o.totalAmount)}</p>
+
               <Select value={o.status} onValueChange={(v: OrderStatus) => updateOrderStatus(o._id, v)}>
-                <SelectTrigger className="w-40"><SelectValue /></SelectTrigger>
+                <SelectTrigger className="w-40">
+                  <SelectValue />
+                </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="pending">Pendiente</SelectItem>
                   <SelectItem value="shipped">Enviado</SelectItem>
@@ -142,72 +167,74 @@ export default function AdminPage() {
           ))}
         </TabsContent>
 
+        {/* ================= PRODUCTOS ================= */}
         <TabsContent value="products" className="mt-6 space-y-2">
           {products.map((p) => (
-            <article key={p._id} className="bg-card border border-brown-ink/10 p-3 flex items-center gap-4">
-              <img src={p.imageUrl} alt="" className="w-12 h-12 object-cover bg-cream-deep" />
-              <div className="flex-1 min-w-0">
-                <p className="font-semibold text-brown-ink truncate">{p.title}</p>
-                <p className="text-xs text-muted-foreground">{p.artist} · {p.format} · stock {p.stock}</p>
+            <article key={p._id} className="bg-card border p-3 flex items-center gap-4">
+              <img
+                src={p.imageUrl || "/placeholder.png"}
+                alt=""
+                className="w-12 h-12 object-cover"
+              />
+              <div className="flex-1">
+                <p>{p.title}</p>
+                <p className="text-xs">{p.artist}</p>
               </div>
-              <p className="font-mono text-sm">{formatCOP(p.price)}</p>
-              <Button variant="ghost" size="sm" onClick={() => removeProduct(p._id)}>
-                <Trash2 className="h-4 w-4 text-destructive" />
+              <p>{formatCOP(p.price)}</p>
+              <Button onClick={() => removeProduct(p._id)}>
+                <Trash2 />
               </Button>
             </article>
           ))}
         </TabsContent>
 
-        <TabsContent value="submissions" className="mt-6 space-y-3">
-          {submissions.length === 0 && <p className="text-muted-foreground italic">Sin publicaciones.</p>}
-          {submissions.map((s) => (
-            <article key={s._id} className="bg-card border border-brown-ink/10 p-4 flex flex-wrap gap-4 items-center justify-between">
-              <div className="flex items-center gap-3">
-                <img src={s.realImages[0]} alt="" className="w-14 h-14 object-cover bg-cream-deep" />
-                <div>
-                  <p className="font-semibold text-brown-ink">Producto {s.productId}</p>
-                  <p className="text-sm text-muted-foreground italic">{s.conditionDetails}</p>
-                </div>
-              </div>
-              {s.approved ? (
-                <span className="text-xs text-olive font-semibold uppercase inline-flex items-center gap-1">
-                  <CheckCircle2 className="h-3.5 w-3.5" /> Aprobado
-                </span>
-              ) : (
-                <Button size="sm" onClick={() => approveSubmission(s._id)} className="bg-olive hover:bg-olive/80">
-                  Aprobar
-                </Button>
-              )}
-            </article>
-          ))}
+        {/* ================= NUEVO PRODUCTO ================= */}
+        <TabsContent value="new-product" className="mt-6">
+          <form onSubmit={createProduct} className="space-y-4 max-w-2xl">
+            <Input placeholder="Título" value={newProduct.title} onChange={(e) => setNewProduct({ ...newProduct, title: e.target.value })} />
+            <Input placeholder="Artista" value={newProduct.artist} onChange={(e) => setNewProduct({ ...newProduct, artist: e.target.value })} />
+            <Input placeholder="Género" value={newProduct.genre} onChange={(e) => setNewProduct({ ...newProduct, genre: e.target.value })} />
+
+            <div className="grid grid-cols-2 gap-4">
+              <Input type="number" placeholder="Precio (CRC)" value={newProduct.price} onChange={(e) => setNewProduct({ ...newProduct, price: e.target.value })} />
+              <Input type="number" placeholder="Stock" min={0} value={newProduct.stock} onChange={(e) => setNewProduct({ ...newProduct, stock: e.target.value })} />
+            </div>
+
+            <Input placeholder="URL Imagen" value={newProduct.imageUrl} onChange={(e) => setNewProduct({ ...newProduct, imageUrl: e.target.value })} />
+
+            <Button type="submit" disabled={creating}>
+              <Plus /> {creating ? "Creando..." : "Crear producto"}
+            </Button>
+          </form>
         </TabsContent>
 
-        <TabsContent value="users" className="mt-6 space-y-2">
-          {users.map((u) => (
-            <article key={u._id} className="bg-card border border-brown-ink/10 p-3 flex items-center gap-4">
-              <div className="h-10 w-10 rounded-full bg-mustard text-brown-ink flex items-center justify-center font-semibold">
-                {u.name[0]}
-              </div>
-              <div className="flex-1">
-                <p className="font-semibold text-brown-ink">{u.name}</p>
-                <p className="text-xs text-muted-foreground">{u.email}</p>
-              </div>
-              <span className="px-2 py-0.5 text-[10px] uppercase tracking-wider bg-brown-ink text-cream font-semibold">
-                {u.role}
-              </span>
-            </article>
-          ))}
-        </TabsContent>
+        {/* ================= USERS ================= */}
+          <TabsContent value="users" className="mt-6 space-y-2">
+            {users.map((u) => (
+              <article key={u._id} className="bg-card border border-brown-ink/10 p-3 flex items-center gap-4">
+                <div className="h-10 w-10 rounded-full bg-mustard text-brown-ink flex items-center justify-center font-semibold">
+                  {u.name[0]}
+                </div>
+                <div className="flex-1">
+                  <p className="font-semibold text-brown-ink">{u.name}</p>
+                  <p className="text-xs text-muted-foreground">{u.email}</p>
+                </div>
+                <span className="px-2 py-0.5 text-[10px] uppercase tracking-wider bg-brown-ink text-cream font-semibold">
+                  {u.role}
+                </span>
+              </article>
+            ))}
+          </TabsContent>
       </Tabs>
     </div>
   );
 }
 
-function Stat({ label, value, highlight }: { label: string; value: number; highlight?: boolean }) {
+function Stat({ label, value, highlight }: any) {
   return (
-    <div className={`p-5 border ${highlight ? "bg-mustard/20 border-mustard" : "bg-card border-brown-ink/10"}`}>
-      <p className="text-xs uppercase tracking-widest text-muted-foreground">{label}</p>
-      <p className="font-display text-4xl text-brown-ink mt-1">{value}</p>
+    <div className={`p-4 border ${highlight ? "bg-yellow-200" : ""}`}>
+      <p>{label}</p>
+      <p>{value}</p>
     </div>
   );
 }

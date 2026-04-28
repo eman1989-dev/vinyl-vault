@@ -1,9 +1,9 @@
-export const formatCOP = (n: number) =>
-  new Intl.NumberFormat("es-CO", {
-    style: "currency",
-    currency: "COP",
+export const formatCOP = (n: number) => {
+  const formattedNumber = new Intl.NumberFormat("es-CO", {
     maximumFractionDigits: 0,
   }).format(n);
+  return `₡${formattedNumber}`;
+};
 
 export const formatDate = (iso?: string) => {
   if (!iso) return "";
