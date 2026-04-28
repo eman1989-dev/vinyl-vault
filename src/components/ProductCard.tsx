@@ -1,12 +1,12 @@
 import { Link } from "react-router-dom";
 import type { Product } from "@/types";
 import { formatCOP } from "@/lib/format";
-import { Disc3, Disc, Cassette } from "lucide-react";
+import { Disc3, Disc, Radio } from "lucide-react";
 
 const formatIcon = {
   Vinyl: Disc3,
   CD: Disc,
-  Cassette: Cassette,
+  Cassette: Radio,
 };
 
 export default function ProductCard({ product }: { product: Product }) {
