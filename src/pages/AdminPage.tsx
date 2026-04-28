@@ -34,6 +34,8 @@ export default function AdminPage() {
   const [orders, setOrders] = useState<Order[]>([]);
   const [users, setUsers] = useState<User[]>([]);
   const [submissions, setSubmissions] = useState<SecondHandSubmission[]>([]);
+  const [newProduct, setNewProduct] = useState(emptyProduct);
+  const [creating, setCreating] = useState(false);
 
   const refresh = () => {
     productsApi.list().then(setProducts);
@@ -60,6 +62,40 @@ export default function AdminPage() {
     await secondHandApi.approve(id);
     refresh();
     toast.success("Publicación aprobada");
+  };
+
+  const createProduct = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const parsed = productSchema.safeParse({
+      ...newProduct,
+      year: newProduct.year ? Number(newProduct.year) : undefined,
+      price: Number(newProduct.price),
+      stock: Number(newProduct.stock),
+    });
+    if (!parsed.success) return toast.error(parsed.error.issues[0].message);
+    setCreating(true);
+    try {
+      await productsApi.create({
+        title: parsed.data.title,
+        artist: parsed.data.artist,
+        genre: parsed.data.genre,
+        format: parsed.data.format,
+        year: parsed.data.year,
+        condition: "new",
+        price: parsed.data.price,
+        stock: parsed.data.stock,
+        description: parsed.data.description,
+        images: [parsed.data.imageUrl],
+        isSecondHand: false,
+      });
+      setNewProduct(emptyProduct);
+      refresh();
+      toast.success("Producto agregado al catálogo");
+    } catch {
+      toast.error("Error al crear el producto");
+    } finally {
+      setCreating(false);
+    }
   };
 
   return (
