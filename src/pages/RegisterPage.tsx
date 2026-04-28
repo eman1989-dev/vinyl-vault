@@ -102,20 +102,7 @@ export default function RegisterPage() {
           />
         </div>
 
-        <div>
-          <Label>Tipo de cuenta</Label>
-          <Select value={form.role} onValueChange={(v: UserRole) => setForm({ ...form, role: v })}>
-            <SelectTrigger><SelectValue /></SelectTrigger>
-            <SelectContent>
-              <SelectItem value="user">Comprador</SelectItem>
-              <SelectItem value="seller">Vendedor</SelectItem>
-              <SelectItem value="admin">Administrador</SelectItem>
-            </SelectContent>
-          </Select>
-          <p className="text-xs text-muted-foreground mt-1 italic">
-            Demo: en producción el rol admin debería asignarse manualmente desde el backend.
-          </p>
-        </div>
+
 
         <div className="pt-4 border-t border-brown-ink/15 space-y-4">
           <h2 className="font-display text-xl text-brown-ink">Dirección</h2>
