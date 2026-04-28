@@ -43,7 +43,6 @@ export default function ProductDetailPage() {
     if (!comment.trim()) return;
     const newR = await reviewsApi.create({
       userId: user._id,
-      userName: user.name,
       productId: product._id,
       rating,
       comment,
@@ -58,7 +57,7 @@ export default function ProductDetailPage() {
       <div className="grid md:grid-cols-2 gap-12">
         <div className="bg-cream-deep border border-brown-ink/10 vinyl-shadow">
           <div className="aspect-square overflow-hidden">
-            <img src={product.images[0]} alt={product.title} className="h-full w-full object-cover" />
+            <img src={product.imageUrl} alt={product.title} className="h-full w-full object-cover" />
           </div>
         </div>
 

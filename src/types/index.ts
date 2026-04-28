@@ -26,16 +26,17 @@ export interface Product {
   title: string;
   artist: string;
   genre: string;
-  format: Format;
+  format: string;
   year?: number;
-  condition: Condition;
+  condition: "new" | "used";
   price: number;
   stock: number;
   description?: string;
-  images: string[];
-  sellerId?: string;
+
+  imageUrl?: string; // ✅ AÑADE ESTO
+
+  images?: string[]; // (opcional si lo sigues usando)
   isSecondHand?: boolean;
-  createdAt?: string;
 }
 
 export interface CartItem {

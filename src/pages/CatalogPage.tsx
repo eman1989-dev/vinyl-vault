@@ -34,8 +34,8 @@ export default function CatalogPage() {
 
   const filtered = useMemo(() => {
     return products.filter((p) => {
-      if (formats.length && !formats.includes(p.format)) return false;
-      if (conditions.length && !conditions.includes(p.condition)) return false;
+      if (formats.length && !formats.includes(p.format as Format)) return false;
+      if (conditions.length && !conditions.includes(p.condition as Condition)) return false;
       if (genres.length && !genres.includes(p.genre)) return false;
       if (query) {
         const q = query.toLowerCase();
