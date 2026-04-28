@@ -75,7 +75,7 @@ export const authApi = {
     name: string,
     email: string,
     _password: string,
-    extra?: { phone?: string; address?: { country?: string; city?: string; details?: string } },
+    extra?: { phone?: string; address?: { country?: string; city?: string; details?: string }; role?: "user" | "seller" | "admin" },
   ): Promise<{ user: User; token: string }> {
     await delay();
     if (mockUsers.find((u) => u.email === email.toLowerCase()))
@@ -84,7 +84,7 @@ export const authApi = {
       _id: `u${Date.now()}`,
       name,
       email: email.toLowerCase(),
-      role: "user",
+      role: extra?.role ?? "user",
       phone: extra?.phone,
       address: extra?.address,
     };
