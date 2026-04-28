@@ -5,6 +5,7 @@ import { authApi } from "@/services/api";
 interface RegisterExtras {
   phone?: string;
   address?: { country?: string; city?: string; details?: string };
+  role?: "user" | "seller" | "admin";
 }
 
 interface AuthCtx {
