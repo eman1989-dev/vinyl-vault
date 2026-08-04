@@ -6,6 +6,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 
 import { AuthProvider } from "@/context/AuthContext";
 import { CartProvider } from "@/context/CartContext";
+import { ThemeProvider } from "@/context/ThemeContext";
 import MainLayout from "@/components/layout/MainLayout";
 import ProtectedRoute from "@/components/ProtectedRoute";
 
@@ -28,6 +29,7 @@ const queryClient = new QueryClient();
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <AuthProvider>
+      <ThemeProvider>
       <CartProvider>
         <TooltipProvider>
           <Toaster />
@@ -65,6 +67,7 @@ const App = () => (
           </BrowserRouter>
         </TooltipProvider>
       </CartProvider>
+        </ThemeProvider>
     </AuthProvider>
   </QueryClientProvider>
 );

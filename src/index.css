@@ -98,6 +98,16 @@
   }
 }
 
+/* Dark-mode overrides for legacy hardcoded text classes */
+@layer base {
+  .dark [class*="text-brown-ink"] {
+    color: #ffffff !important;
+  }
+  .dark [class*="text-brown-ink/"] {
+    color: #ffffff !important;
+  }
+}
+
 @layer base {
   * {
     @apply border-border;

@@ -1,7 +1,8 @@
 import { Link, NavLink, useNavigate } from "react-router-dom";
-import { Disc3, ShoppingBag, User as UserIcon, LogOut, ShieldCheck, Store } from "lucide-react";
+import { Disc3, ShoppingBag, User as UserIcon, LogOut, ShieldCheck, Store, Moon, Sun } from "lucide-react";
 import { useCart } from "@/context/CartContext";
 import { useAuth } from "@/context/AuthContext";
+import { useTheme } from "@/context/ThemeContext";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -15,6 +16,7 @@ import {
 export default function Navbar() {
   const { count } = useCart();
   const { user, logout } = useAuth();
+  const { theme, toggle } = useTheme();
   const navigate = useNavigate();
 
   const navLinkClass = ({ isActive }: { isActive: boolean }) =>
@@ -23,11 +25,11 @@ export default function Navbar() {
     }`;
 
   return (
-    <header className="sticky top-0 z-40 border-b border-brown-ink/15 bg-cream/85 backdrop-blur-md">
+    <header className="sticky top-0 z-40 border-b border-brown-ink/15 bg-cream/85 backdrop-blur-md dark:bg-background/90 dark:border-border/20">
       <div className="container flex h-16 items-center justify-between gap-6">
         <Link to="/" className="flex items-center gap-2 group">
           <Disc3 className="h-7 w-7 text-burnt-deep group-hover:animate-spin-slow" strokeWidth={1.5} />
-          <span className="font-display text-xl text-brown-ink leading-none">
+          <span className="font-display text-xl text-foreground leading-none">
             Vinyls<span className="text-burnt"> & </span>More
           </span>
         </Link>
@@ -45,7 +47,11 @@ export default function Navbar() {
         </nav>
 
         <div className="flex items-center gap-2">
-          <Button asChild variant="ghost" size="sm" className="relative text-brown-ink hover:bg-mustard/20">
+          <Button variant="ghost" size="sm" className="text-foreground hover:bg-mustard/20" onClick={toggle} aria-label="Toggle dark mode">
+            {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+          </Button>
+
+          <Button asChild variant="ghost" size="sm" className="relative text-foreground hover:bg-mustard/20">
             <Link to="/carrito" aria-label="Carrito">
               <ShoppingBag className="h-5 w-5" />
               {count > 0 && (
@@ -59,7 +65,7 @@ export default function Navbar() {
           {user ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="sm" className="text-brown-ink hover:bg-mustard/20 gap-2">
+                <Button variant="ghost" size="sm" className="text-foreground hover:bg-mustard/20 gap-2">
                   <UserIcon className="h-4 w-4" />
                   <span className="hidden sm:inline">{user.name.split(" ")[0]}</span>
                 </Button>
