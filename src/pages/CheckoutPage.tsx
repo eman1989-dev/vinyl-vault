@@ -21,7 +21,7 @@ export default function CheckoutPage() {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [submitting, setSubmitting] = useState(false);
-  const [form, setForm] = useState({ country: "Colombia", city: "", details: "" });
+  const [form, setForm] = useState({ country: "Costa Rica", city: "", details: "" });
 
   if (!user) { navigate("/login"); return null; }
   if (items.length === 0) { navigate("/carrito"); return null; }

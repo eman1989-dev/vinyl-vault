@@ -33,8 +33,17 @@ export default function ProductDetailPage() {
     ? reviews.reduce((s, r) => s + r.rating, 0) / reviews.length
     : 0;
 
-  const handleAdd = () => {
-    add(product, qty);
+  const handleAdd = async () => {
+    const res = await add(product, qty);
+    if (!res.ok) {
+      if (res.reason === "api") {
+        toast.error("No se pudo actualizar el stock. Intenta de nuevo.");
+      } else {
+        toast.error("No hay suficiente stock disponible");
+      }
+      return;
+    }
+    setProduct((prev) => (prev ? { ...prev, stock: res.newStock } : prev));
     toast.success(`${product.title} añadido al carrito`);
   };
 

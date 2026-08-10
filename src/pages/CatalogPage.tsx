@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import ProductCard from "@/components/ProductCard";
-import { productsApi } from "@/services/api";
+import { productsApi, secondHandApi } from "@/services/api";
 import type { Condition, Format, Product } from "@/types";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -16,6 +16,7 @@ export default function CatalogPage() {
   const [params, setParams] = useSearchParams();
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
+  const [approvedSecondHandIds, setApprovedSecondHandIds] = useState<Set<string>>(new Set());
   const [query, setQuery] = useState(params.get("q") || "");
   const [formats, setFormats] = useState<Format[]>(
     (params.get("format")?.split(",").filter(Boolean) as Format[]) || []
@@ -25,15 +26,26 @@ export default function CatalogPage() {
 
   useEffect(() => {
     productsApi.list().then((p) => { setProducts(p); setLoading(false); });
+    secondHandApi
+      .listAll()
+      .then((subs) =>
+        setApprovedSecondHandIds(new Set(subs.filter((s) => s.approved).map((s) => s.productId)))
+      )
+      .catch(() => setApprovedSecondHandIds(new Set()));
   }, []);
 
+  const visible = useMemo(
+    () => products.filter((p) => !(p.isSecondHand && !approvedSecondHandIds.has(p._id))),
+    [products, approvedSecondHandIds]
+  );
+
   const allGenres = useMemo(
-    () => Array.from(new Set(products.map((p) => p.genre))).sort(),
-    [products]
+    () => Array.from(new Set(visible.map((p) => p.genre))).sort(),
+    [visible]
   );
 
   const filtered = useMemo(() => {
-    return products.filter((p) => {
+    return visible.filter((p) => {
       if (formats.length && !formats.includes(p.format as Format)) return false;
       if (conditions.length && !conditions.includes(p.condition as Condition)) return false;
       if (genres.length && !genres.includes(p.genre)) return false;
@@ -47,7 +59,7 @@ export default function CatalogPage() {
       }
       return true;
     });
-  }, [products, formats, conditions, genres, query]);
+  }, [visible, formats, conditions, genres, query]);
 
   const toggle = <T,>(arr: T[], v: T): T[] =>
     arr.includes(v) ? arr.filter((x) => x !== v) : [...arr, v];

@@ -100,6 +100,10 @@ export const ordersApi = {
     return apiFetch<Order[]>("/orden");
   },
 
+  async listForUser(userId: string): Promise<Order[]> {
+    return apiFetch<Order[]>(`/orden/user/${userId}`);
+  },
+
   async create(order: any): Promise<Order> {
     return apiFetch<Order>("/orden", {
       method: "POST",

@@ -19,6 +19,7 @@ import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
 import OrdersPage from "./pages/OrdersPage";
 import SecondHandPage from "./pages/SecondHandPage";
+import AiRecommendationsPage from "./pages/AiRecommendationsPage";
 import SellerDashboardPage from "./pages/SellerDashboardPage";
 import PublishItemPage from "./pages/PublishItemPage";
 import AdminPage from "./pages/AdminPage";
@@ -42,6 +43,7 @@ const App = () => (
                 <Route path="/producto/:id" element={<ProductDetailPage />} />
                 <Route path="/carrito" element={<CartPage />} />
                 <Route path="/segunda-mano" element={<SecondHandPage />} />
+                <Route path="/recomendaciones" element={<AiRecommendationsPage />} />
                 <Route path="/login" element={<LoginPage />} />
                 <Route path="/registro" element={<RegisterPage />} />
 

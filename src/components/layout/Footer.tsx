@@ -29,7 +29,7 @@ export default function Footer() {
           <h4 className="font-display text-lg text-mustard mb-3">Contacto</h4>
           <ul className="space-y-2 text-sm text-cream/80">
             <li className="flex items-center gap-2"><Mail className="h-4 w-4" /> hola@vinylsmore.com</li>
-            <li className="flex items-center gap-2"><MapPin className="h-4 w-4" /> Bogotá, Colombia</li>
+            <li className="flex items-center gap-2"><MapPin className="h-4 w-4" /> San José, Costa Rica</li>
             <li className="flex items-center gap-2"><Music2 className="h-4 w-4" /> Lun – Sáb · 10:00 – 20:00</li>
           </ul>
         </div>

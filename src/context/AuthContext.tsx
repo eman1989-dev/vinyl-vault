@@ -18,20 +18,33 @@ interface AuthCtx {
 
 const AuthContext = createContext<AuthCtx | undefined>(undefined);
 
+const normalizeUser = (u: User & { id?: string }): User => ({
+  ...u,
+  _id: u._id ?? u.id ?? "",
+});
+
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const stored = localStorage.getItem("vm_user");
-    if (stored) setUser(JSON.parse(stored));
+    if (stored) {
+      try {
+        const parsed = JSON.parse(stored);
+        if (parsed && typeof parsed === "object") setUser(normalizeUser(parsed));
+      } catch {
+        /* carrito/user corrupto */
+      }
+    }
     setLoading(false);
   }, []);
 
   const persist = (u: User, token: string) => {
-    localStorage.setItem("vm_user", JSON.stringify(u));
-    localStorage.setItem("vm_token", token);
-    setUser(u);
+    const normalized = normalizeUser(u);
+    localStorage.setItem("vm_user", JSON.stringify(normalized));
+    localStorage.setItem("vm_token", token || "");
+    setUser(normalized);
   };
 
   const login = async (email: string, password: string) => {

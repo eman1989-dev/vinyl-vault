@@ -95,16 +95,18 @@
     --border: 24 20% 22%;
     --input: 24 20% 22%;
     --ring: 38 75% 55%;
-  }
-}
 
-/* Dark-mode overrides for legacy hardcoded text classes */
-@layer base {
-  .dark [class*="text-brown-ink"] {
-    color: #ffffff !important;
-  }
-  .dark [class*="text-brown-ink/"] {
-    color: #ffffff !important;
+    /* Brand-specific tokens — invert for dark mode:
+       light surfaces (cream/mustard) become dark, dark ink becomes light */
+    --cream: 28 30% 16%;
+    --cream-deep: 28 30% 12%;
+    --mustard: 38 55% 42%;
+    --mustard-deep: 38 80% 62%;
+    --burnt: 16 72% 60%;
+    --burnt-deep: 16 68% 50%;
+    --brown: 26 35% 58%;
+    --brown-ink: 38 50% 92%;
+    --olive: 60 30% 62%;
   }
 }
 

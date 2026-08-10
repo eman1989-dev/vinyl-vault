@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { ordersApi, productsApi, secondHandApi, usersApi } from "@/services/api";
 import type { Format, Order, OrderStatus, Product, SecondHandSubmission, User } from "@/types";
 import { Button } from "@/components/ui/button";
@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { CheckCircle2, Plus, Trash2 } from "lucide-react";
+import { CheckCircle2, Clock, Plus, Search, Trash2 } from "lucide-react";
 import { formatCOP, formatDate } from "@/lib/format";
 import { toast } from "sonner";
 import { z } from "zod";
@@ -41,6 +41,7 @@ export default function AdminPage() {
   const [orders, setOrders] = useState<Order[]>([]);
   const [users, setUsers] = useState<User[]>([]);
   const [submissions, setSubmissions] = useState<SecondHandSubmission[]>([]);
+  const [userQuery, setUserQuery] = useState("");
   const [newProduct, setNewProduct] = useState(emptyProduct);
   const [creating, setCreating] = useState(false);
 
@@ -52,6 +53,17 @@ export default function AdminPage() {
   };
 
   useEffect(refresh, []);
+
+  const filteredUsers = useMemo(() => {
+    const q = userQuery.trim().toLowerCase();
+    if (!q) return users;
+    return users.filter(
+      (u) =>
+        u.name.toLowerCase().includes(q) ||
+        u.email.toLowerCase().includes(q) ||
+        u.role.toLowerCase().includes(q)
+    );
+  }, [users, userQuery]);
 
   const updateOrderStatus = async (id: string, status: OrderStatus) => {
     await ordersApi.updateStatus(id, status);
@@ -69,6 +81,12 @@ export default function AdminPage() {
     await secondHandApi.approve(id);
     refresh();
     toast.success("Publicación aprobada");
+  };
+
+  const rejectSubmission = async (id: string) => {
+    await secondHandApi.delete(id);
+    refresh();
+    toast.success("Publicación eliminada");
   };
 
   const createProduct = async (e: React.FormEvent) => {
@@ -144,27 +162,54 @@ export default function AdminPage() {
 
         {/* ================= PEDIDOS ================= */}
         <TabsContent value="orders" className="mt-6 space-y-3">
-          {orders.map((o) => (
-            <article key={o._id} className="bg-card border p-4 flex justify-between">
-              <div>
-                <p className="font-semibold">#{o._id.slice(-6)}</p>
-                <p className="text-sm">{formatDate(o.createdAt)}</p>
-              </div>
+          {orders.length === 0 && (
+            <p className="text-muted-foreground italic">No hay pedidos todavía.</p>
+          )}
+          {orders.map((o) => {
+            const customer = users.find((u) => u._id === o.userId);
+            return (
+              <article key={o._id} className="bg-card border border-brown-ink/10 p-5">
+                <div className="flex flex-wrap gap-4 items-center justify-between">
+                  <div>
+                    <p className="font-semibold text-brown-ink">#{o._id.slice(-6)}</p>
+                    <p className="text-sm text-muted-foreground">{formatDate(o.createdAt)}</p>
+                    {customer && (
+                      <p className="text-xs text-muted-foreground mt-0.5">
+                        {customer.name} · {customer.email}
+                      </p>
+                    )}
+                  </div>
+                  <div className="text-right">
+                    <p className="font-display text-xl text-brown-ink">{formatCOP(o.totalAmount)}</p>
+                    <p className="text-xs text-muted-foreground">
+                      {o.shippingAddress.city}{o.shippingAddress.country ? `, ${o.shippingAddress.country}` : ""}
+                    </p>
+                  </div>
+                  <Select value={o.status} onValueChange={(v: OrderStatus) => updateOrderStatus(o._id, v)}>
+                    <SelectTrigger className="w-40">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="pending">Pendiente</SelectItem>
+                      <SelectItem value="shipped">Enviado</SelectItem>
+                      <SelectItem value="delivered">Entregado</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
 
-              <p>{formatCOP(o.totalAmount)}</p>
-
-              <Select value={o.status} onValueChange={(v: OrderStatus) => updateOrderStatus(o._id, v)}>
-                <SelectTrigger className="w-40">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="pending">Pendiente</SelectItem>
-                  <SelectItem value="shipped">Enviado</SelectItem>
-                  <SelectItem value="delivered">Entregado</SelectItem>
-                </SelectContent>
-              </Select>
-            </article>
-          ))}
+                <ul className="mt-4 pt-4 border-t border-brown-ink/10 space-y-1.5">
+                  {o.items.map((it) => (
+                    <li key={it.productId} className="flex justify-between gap-3 text-sm">
+                      <span className="truncate">
+                        {it.title} <span className="text-muted-foreground">x{it.quantity}</span>
+                      </span>
+                      <span className="shrink-0">{formatCOP(it.price * it.quantity)}</span>
+                    </li>
+                  ))}
+                </ul>
+              </article>
+            );
+          })}
         </TabsContent>
 
         {/* ================= PRODUCTOS ================= */}
@@ -208,22 +253,99 @@ export default function AdminPage() {
           </form>
         </TabsContent>
 
+        {/* ================= SEGUNDA MANO ================= */}
+        <TabsContent value="submissions" className="mt-6 space-y-3">
+          {submissions.length === 0 ? (
+            <p className="text-muted-foreground italic">No hay publicaciones de segunda mano.</p>
+          ) : (
+            [...submissions]
+              .sort((a, b) => Number(a.approved) - Number(b.approved))
+              .map((s) => {
+                const product = products.find((p) => p._id === s.productId);
+                return (
+                  <article key={s._id} className="bg-card border border-brown-ink/10 p-4 flex flex-wrap gap-4 items-center">
+                    <img
+                      src={s.realImages[0] || product?.imageUrl || product?.images?.[0]}
+                      alt=""
+                      className="w-16 h-16 object-cover bg-cream-deep"
+                    />
+                    <div className="flex-1 min-w-[200px]">
+                      <p className="font-semibold text-brown-ink">
+                        {product ? `${product.title} — ${product.artist}` : "Artículo sin producto"}
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        {product
+                          ? `${product.format} · ${product.genre} · ${formatCOP(product.price)}`
+                          : `Producto ID: ${s.productId}`}
+                      </p>
+                      <p className="text-sm italic text-brown-ink/70 mt-1">{s.conditionDetails}</p>
+                    </div>
+                    <div className="text-right">
+                      {s.approved ? (
+                        <span className="inline-flex items-center gap-1 text-xs text-olive font-semibold uppercase">
+                          <CheckCircle2 className="h-3.5 w-3.5" /> Aprobado
+                        </span>
+                      ) : (
+                        <span className="inline-flex items-center gap-1 text-xs text-mustard-deep font-semibold uppercase">
+                          <Clock className="h-3.5 w-3.5" /> Pendiente de revisión
+                        </span>
+                      )}
+                      <p className="text-xs text-muted-foreground mt-1">{formatDate(s.createdAt)}</p>
+                    </div>
+                    <div className="flex gap-2">
+                      <Button
+                        size="sm"
+                        disabled={s.approved}
+                        onClick={() => approveSubmission(s._id)}
+                        className="bg-olive hover:bg-olive/80 disabled:opacity-40"
+                      >
+                        <CheckCircle2 className="h-4 w-4 mr-1" /> Aprobar
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className="text-destructive border-destructive/40 hover:bg-destructive/10"
+                        onClick={() => rejectSubmission(s._id)}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </article>
+                );
+              })
+          )}
+        </TabsContent>
+
         {/* ================= USERS ================= */}
           <TabsContent value="users" className="mt-6 space-y-2">
-            {users.map((u) => (
-              <article key={u._id} className="bg-card border border-brown-ink/10 p-3 flex items-center gap-4">
-                <div className="h-10 w-10 rounded-full bg-mustard text-brown-ink flex items-center justify-center font-semibold">
-                  {u.name[0]}
-                </div>
-                <div className="flex-1">
-                  <p className="font-semibold text-brown-ink">{u.name}</p>
-                  <p className="text-xs text-muted-foreground">{u.email}</p>
-                </div>
-                <span className="px-2 py-0.5 text-[10px] uppercase tracking-wider bg-brown-ink text-cream font-semibold">
-                  {u.role}
-                </span>
-              </article>
-            ))}
+            <div className="relative max-w-md mb-4">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input
+                placeholder="Buscar por nombre, correo o rol…"
+                value={userQuery}
+                onChange={(e) => setUserQuery(e.target.value)}
+                className="pl-9 bg-card border-brown-ink/20"
+              />
+            </div>
+
+            {filteredUsers.length === 0 ? (
+              <p className="text-muted-foreground italic">No se encontraron usuarios.</p>
+            ) : (
+              filteredUsers.map((u) => (
+                <article key={u._id} className="bg-card border border-brown-ink/10 p-3 flex items-center gap-4">
+                  <div className="h-10 w-10 rounded-full bg-mustard text-brown-ink flex items-center justify-center font-semibold">
+                    {u.name[0]}
+                  </div>
+                  <div className="flex-1">
+                    <p className="font-semibold text-brown-ink">{u.name}</p>
+                    <p className="text-xs text-muted-foreground">{u.email}</p>
+                  </div>
+                  <span className="px-2 py-0.5 text-[10px] uppercase tracking-wider bg-brown-ink text-cream font-semibold">
+                    {u.role}
+                  </span>
+                </article>
+              ))
+            )}
           </TabsContent>
       </Tabs>
     </div>
@@ -232,7 +354,7 @@ export default function AdminPage() {
 
 function Stat({ label, value, highlight }: any) {
   return (
-    <div className={`p-4 border ${highlight ? "bg-yellow-200" : ""}`}>
+    <div className={`p-4 border ${highlight ? "bg-mustard text-brown-ink" : ""}`}>
       <p>{label}</p>
       <p>{value}</p>
     </div>

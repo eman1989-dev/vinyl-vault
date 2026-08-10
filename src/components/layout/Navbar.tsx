@@ -1,5 +1,5 @@
 import { Link, NavLink, useNavigate } from "react-router-dom";
-import { Disc3, ShoppingBag, User as UserIcon, LogOut, ShieldCheck, Store, Moon, Sun } from "lucide-react";
+import { Disc3, ShoppingBag, User as UserIcon, LogOut, ShieldCheck, Store, Moon, Sun, Sparkles } from "lucide-react";
 import { useCart } from "@/context/CartContext";
 import { useAuth } from "@/context/AuthContext";
 import { useTheme } from "@/context/ThemeContext";
@@ -38,6 +38,11 @@ export default function Navbar() {
           <NavLink to="/" end className={navLinkClass}>Inicio</NavLink>
           <NavLink to="/catalogo" className={navLinkClass}>Catálogo</NavLink>
           <NavLink to="/segunda-mano" className={navLinkClass}>Segunda mano</NavLink>
+          <NavLink to="/recomendaciones" className={navLinkClass}>
+            <span className="inline-flex items-center gap-1.5">
+              <Sparkles className="h-3.5 w-3.5" /> Recomendaciones
+            </span>
+          </NavLink>
           {user?.role === "seller" && (
             <NavLink to="/vendedor" className={navLinkClass}>Mi tienda</NavLink>
           )}
