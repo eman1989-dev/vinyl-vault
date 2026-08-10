@@ -7,8 +7,7 @@ import type {
 } from "@/types";
 
 export const API_BASE_URL =
-  (import.meta.env.VITE_API_URL as string) || "https://vinyls-more.onrender.com";
-
+  (import.meta.env.VITE_API_URL as string) || "https://vinyls-more.onrender.com/api";
 
 // ---------- Helper genérico para cuando conectes el backend ----------
 export async function apiFetch<T>(path: string, init: RequestInit = {}): Promise<T> {
