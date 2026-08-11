@@ -248,6 +248,21 @@ export default function AdminPage() {
             <Input placeholder={t("common.artist")} value={newProduct.artist} onChange={(e) => setNewProduct({ ...newProduct, artist: e.target.value })} />
             <Input placeholder={t("common.genre")} value={newProduct.genre} onChange={(e) => setNewProduct({ ...newProduct, genre: e.target.value })} />
 
+            <div className="grid grid-cols-1 gap-4">
+              <Label>{t("common.format")}</Label>
+              <Select
+                value={newProduct.format}
+                onValueChange={(v: Format) => setNewProduct({ ...newProduct, format: v })}
+              >
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Vinyl">Vinyl</SelectItem>
+                  <SelectItem value="CD">CD</SelectItem>
+                  <SelectItem value="Cassette">Cassette</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
             <div className="grid grid-cols-2 gap-4">
               <Input type="number" placeholder={t("admin.priceCrc")} value={newProduct.price} onChange={(e) => setNewProduct({ ...newProduct, price: e.target.value })} />
               <Input type="number" placeholder={t("admin.stock")} min={0} value={newProduct.stock} onChange={(e) => setNewProduct({ ...newProduct, stock: e.target.value })} />
