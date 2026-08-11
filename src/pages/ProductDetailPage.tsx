@@ -7,6 +7,7 @@ import { formatCOP, formatDate } from "@/lib/format";
 import { Button } from "@/components/ui/button";
 import { useCart } from "@/context/CartContext";
 import { useAuth } from "@/context/AuthContext";
+import { useLanguage } from "@/context/LanguageContext";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 
@@ -20,6 +21,7 @@ export default function ProductDetailPage() {
   const [rating, setRating] = useState(5);
   const { add } = useCart();
   const { user } = useAuth();
+  const { t } = useLanguage();
 
   useEffect(() => {
     if (!id) return;
@@ -27,7 +29,7 @@ export default function ProductDetailPage() {
     reviewsApi.listByProduct(id).then(setReviews);
   }, [id]);
 
-  if (!product) return <div className="container py-20">Cargando…</div>;
+  if (!product) return <div className="container py-20">{t("common.loading")}</div>;
 
   const avg = reviews.length
     ? reviews.reduce((s, r) => s + r.rating, 0) / reviews.length
@@ -37,14 +39,14 @@ export default function ProductDetailPage() {
     const res = await add(product, qty);
     if (!res.ok) {
       if (res.reason === "api") {
-        toast.error("No se pudo actualizar el stock. Intenta de nuevo.");
+        toast.error(t("productDetail.stockApiError"));
       } else {
-        toast.error("No hay suficiente stock disponible");
+        toast.error(t("productDetail.stockError"));
       }
       return;
     }
     setProduct((prev) => (prev ? { ...prev, stock: res.newStock } : prev));
-    toast.success(`${product.title} añadido al carrito`);
+    toast.success(t("productDetail.addedToCart", { title: product.title }));
   };
 
   const submitReview = async () => {
@@ -58,7 +60,7 @@ export default function ProductDetailPage() {
     });
     setReviews((prev) => [...prev, newR]);
     setComment("");
-    toast.success("Reseña publicada");
+    toast.success(t("productDetail.reviewPublished"));
   };
 
   return (
@@ -82,16 +84,16 @@ export default function ProductDetailPage() {
               ))}
             </div>
             <span className="text-sm text-muted-foreground">
-              {reviews.length} {reviews.length === 1 ? "reseña" : "reseñas"}
+              {reviews.length} {reviews.length === 1 ? t("productDetail.reviewsOne") : t("productDetail.reviewsMany")}
             </span>
           </div>
 
           <div className="mt-6 flex flex-wrap gap-2">
             <Badge>{product.genre}</Badge>
             <Badge variant={product.condition === "new" ? "olive" : "mustard"}>
-              {product.condition === "new" ? "Nuevo" : "Usado"}
+              {product.condition === "new" ? t("common.new") : t("common.used")}
             </Badge>
-            {product.isSecondHand && <Badge variant="burnt">Segunda mano</Badge>}
+            {product.isSecondHand && <Badge variant="burnt">{t("productDetail.secondHand")}</Badge>}
           </div>
 
           <p className="mt-6 text-brown-ink/80 font-serif-body leading-relaxed">{product.description}</p>
@@ -99,17 +101,17 @@ export default function ProductDetailPage() {
           <div className="mt-8 pt-6 border-t border-brown-ink/15">
             <div className="font-display text-4xl text-brown-ink">{formatCOP(product.price)}</div>
             <p className="text-sm text-olive mt-1">
-              {product.stock > 0 ? `${product.stock} unidades disponibles` : "Agotado"}
+              {product.stock > 0 ? t("productDetail.unitsAvailable", { count: product.stock }) : t("common.outOfStock")}
             </p>
           </div>
 
           <div className="mt-6 flex items-center gap-4">
             <div className="flex items-center border border-brown-ink/30">
-              <button onClick={() => setQty(Math.max(1, qty - 1))} className="p-3 hover:bg-mustard/20" aria-label="Restar">
+              <button onClick={() => setQty(Math.max(1, qty - 1))} className="p-3 hover:bg-mustard/20" aria-label={t("productDetail.decrease")}>
                 <Minus className="h-4 w-4" />
               </button>
               <span className="px-4 font-medium w-12 text-center">{qty}</span>
-              <button onClick={() => setQty(Math.min(product.stock, qty + 1))} className="p-3 hover:bg-mustard/20" aria-label="Sumar">
+              <button onClick={() => setQty(Math.min(product.stock, qty + 1))} className="p-3 hover:bg-mustard/20" aria-label={t("productDetail.increase")}>
                 <Plus className="h-4 w-4" />
               </button>
             </div>
@@ -119,7 +121,7 @@ export default function ProductDetailPage() {
               disabled={product.stock === 0}
               className="flex-1 bg-burnt hover:bg-burnt-deep press-shadow"
             >
-              <ShoppingBag className="h-4 w-4 mr-2" /> Añadir al carrito
+              <ShoppingBag className="h-4 w-4 mr-2" /> {t("productDetail.addToCart")}
             </Button>
           </div>
         </div>
@@ -127,17 +129,17 @@ export default function ProductDetailPage() {
 
       {/* Reviews */}
       <section className="mt-20 max-w-3xl">
-        <h2 className="font-display text-3xl text-brown-ink mb-6">Reseñas</h2>
+        <h2 className="font-display text-3xl text-brown-ink mb-6">{t("productDetail.reviewsTitle")}</h2>
 
         <div className="space-y-6 mb-10">
           {reviews.length === 0 && (
-            <p className="text-muted-foreground font-serif-body italic">Aún no hay reseñas. Sé el primero.</p>
+            <p className="text-muted-foreground font-serif-body italic">{t("productDetail.noReviews")}</p>
           )}
           {reviews.map((r) => (
             <article key={r._id} className="bg-card border border-brown-ink/10 p-5">
               <div className="flex justify-between items-start">
                 <div>
-                  <p className="font-semibold text-brown-ink">{r.userName ?? "Usuario"}</p>
+                  <p className="font-semibold text-brown-ink">{r.userName ?? t("productDetail.userLabel")}</p>
                   <div className="flex">
                     {[1,2,3,4,5].map((i) => (
                       <Star key={i} className={`h-3.5 w-3.5 ${i <= r.rating ? "fill-mustard text-mustard" : "text-muted-foreground"}`} />
@@ -153,10 +155,10 @@ export default function ProductDetailPage() {
 
         {user ? (
           <div className="bg-card border border-brown-ink/10 p-6">
-            <h3 className="font-display text-xl mb-3">Escribe tu reseña</h3>
+            <h3 className="font-display text-xl mb-3">{t("productDetail.writeReview")}</h3>
             <div className="flex gap-1 mb-3">
               {[1,2,3,4,5].map((i) => (
-                <button key={i} onClick={() => setRating(i)} aria-label={`${i} estrellas`}>
+                <button key={i} onClick={() => setRating(i)} aria-label={t("productDetail.stars", { n: i })}>
                   <Star className={`h-6 w-6 ${i <= rating ? "fill-mustard text-mustard" : "text-muted-foreground"}`} />
                 </button>
               ))}
@@ -164,15 +166,15 @@ export default function ProductDetailPage() {
             <Textarea
               value={comment}
               onChange={(e) => setComment(e.target.value)}
-              placeholder="Cuéntanos qué te pareció…"
+              placeholder={t("productDetail.reviewPlaceholder")}
               maxLength={500}
               className="bg-background"
             />
-            <Button onClick={submitReview} className="mt-3 bg-burnt hover:bg-burnt-deep">Publicar</Button>
+            <Button onClick={submitReview} className="mt-3 bg-burnt hover:bg-burnt-deep">{t("productDetail.publish")}</Button>
           </div>
         ) : (
           <div className="border-2 border-dashed border-brown-ink/20 p-6 text-center">
-            <p className="font-serif-body italic">Inicia sesión para dejar una reseña.</p>
+            <p className="font-serif-body italic">{t("productDetail.loginToReview")}</p>
           </div>
         )}
       </section>

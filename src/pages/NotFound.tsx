@@ -2,9 +2,11 @@ import { Link, useLocation } from "react-router-dom";
 import { useEffect } from "react";
 import { Disc3 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useLanguage } from "@/context/LanguageContext";
 
 const NotFound = () => {
   const location = useLocation();
+  const { t } = useLanguage();
 
   useEffect(() => {
     console.error("404 Error: ruta no encontrada:", location.pathname);
@@ -16,10 +18,10 @@ const NotFound = () => {
       <p className="mt-6 text-xs uppercase tracking-[0.25em] text-burnt">Side C · Track 04</p>
       <h1 className="mt-3 font-display text-7xl text-brown-ink">404</h1>
       <p className="mt-4 font-serif-body italic text-xl text-muted-foreground">
-        Esta canción no está en nuestro catálogo.
+        {t("notFound.song")}
       </p>
       <Button asChild className="mt-8 bg-burnt hover:bg-burnt-deep press-shadow">
-        <Link to="/">Volver al inicio</Link>
+        <Link to="/">{t("notFound.backHome")}</Link>
       </Button>
     </div>
   );

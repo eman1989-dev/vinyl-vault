@@ -1,30 +1,17 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Disc3 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useAuth } from "@/context/AuthContext";
+import { useLanguage } from "@/context/LanguageContext";
 import { toast } from "sonner";
 import { z } from "zod";
 
-const schema = z.object({
-  name: z.string().trim().min(2, "Nombre muy corto").max(80),
-  email: z.string().trim().email("Correo inválido").max(120),
-  password: z.string().min(6, "La contraseña debe tener al menos 6 caracteres").max(80),
-  phone: z
-    .string()
-    .trim()
-    .min(7, "Teléfono inválido")
-    .max(20, "Teléfono muy largo")
-    .regex(/^[+\d\s\-()]+$/, "Solo dígitos y + - ( )"),
-  country: z.string().trim().min(2, "País requerido").max(60),
-  city: z.string().trim().min(2, "Ciudad requerida").max(60),
-  details: z.string().trim().min(5, "Indica una dirección válida").max(200),
-});
-
 export default function RegisterPage() {
   const { register } = useAuth();
+  const { t } = useLanguage();
   const navigate = useNavigate();
   const [form, setForm] = useState({
     name: "",
@@ -36,6 +23,25 @@ export default function RegisterPage() {
     details: "",
   });
   const [loading, setLoading] = useState(false);
+
+  const schema = useMemo(
+    () =>
+      z.object({
+        name: z.string().trim().min(2, t("auth.errNameShort")).max(80),
+        email: z.string().trim().email(t("auth.errEmailInvalid")).max(120),
+        password: z.string().min(6, t("auth.errPasswordShort")).max(80),
+        phone: z
+          .string()
+          .trim()
+          .min(7, t("auth.errPhoneInvalid"))
+          .max(20, t("auth.errPhoneLong"))
+          .regex(/^[+\d\s\-()]+$/, t("auth.errPhoneChars")),
+        country: z.string().trim().min(2, t("auth.errCountryRequired")).max(60),
+        city: z.string().trim().min(2, t("auth.errCityRequired")).max(60),
+        details: z.string().trim().min(5, t("checkout.invalidAddress")).max(200),
+      }),
+    [t]
+  );
 
   const set = (k: keyof typeof form) => (e: React.ChangeEvent<HTMLInputElement>) =>
     setForm({ ...form, [k]: e.target.value });
@@ -54,10 +60,10 @@ export default function RegisterPage() {
           details: parsed.data.details,
         },
       });
-      toast.success("Cuenta creada");
+      toast.success(t("auth.accountCreated"));
       navigate("/");
     } catch (err: any) {
-      toast.error(err.message || "Error al registrarse");
+      toast.error(err.message || t("auth.registerError"));
     } finally {
       setLoading(false);
     }
@@ -67,31 +73,31 @@ export default function RegisterPage() {
     <div className="container py-20 max-w-xl">
       <div className="text-center mb-8">
         <Disc3 className="h-12 w-12 mx-auto text-burnt animate-spin-slow" strokeWidth={1.2} />
-        <h1 className="mt-4 font-display text-4xl text-brown-ink">Crea tu cuenta</h1>
+        <h1 className="mt-4 font-display text-4xl text-brown-ink">{t("auth.createAccountTitle")}</h1>
         <p className="mt-2 font-serif-body italic text-muted-foreground">
-          Únete a la comunidad de coleccionistas.
+          {t("auth.registerSubtitle")}
         </p>
       </div>
 
       <form onSubmit={submit} className="bg-card border border-brown-ink/10 p-8 space-y-5 vinyl-shadow">
         <div>
-          <Label>Nombre completo</Label>
+          <Label>{t("auth.fullName")}</Label>
           <Input value={form.name} onChange={set("name")} maxLength={80} required />
         </div>
 
         <div className="grid sm:grid-cols-2 gap-4">
           <div>
-            <Label>Correo electrónico</Label>
+            <Label>{t("common.email")}</Label>
             <Input type="email" value={form.email} onChange={set("email")} maxLength={120} required />
           </div>
           <div>
-            <Label>Contraseña</Label>
+            <Label>{t("common.password")}</Label>
             <Input type="password" value={form.password} onChange={set("password")} maxLength={80} required />
           </div>
         </div>
 
         <div>
-          <Label>Número de teléfono</Label>
+          <Label>{t("auth.phone")}</Label>
           <Input
             type="tel"
             value={form.phone}
@@ -102,22 +108,20 @@ export default function RegisterPage() {
           />
         </div>
 
-
-
         <div className="pt-4 border-t border-brown-ink/15 space-y-4">
-          <h2 className="font-display text-xl text-brown-ink">Dirección</h2>
+          <h2 className="font-display text-xl text-brown-ink">{t("auth.addressTitle")}</h2>
           <div className="grid sm:grid-cols-2 gap-4">
             <div>
-              <Label>País</Label>
+              <Label>{t("common.country")}</Label>
               <Input value={form.country} onChange={set("country")} maxLength={60} required />
             </div>
             <div>
-              <Label>Ciudad</Label>
+              <Label>{t("common.city")}</Label>
               <Input value={form.city} onChange={set("city")} maxLength={60} required />
             </div>
           </div>
           <div>
-            <Label>Detalles (calle, número, apto)</Label>
+            <Label>{t("auth.addressDetails")}</Label>
             <Input
               value={form.details}
               onChange={set("details")}
@@ -129,13 +133,13 @@ export default function RegisterPage() {
         </div>
 
         <Button type="submit" disabled={loading} className="w-full bg-burnt hover:bg-burnt-deep press-shadow" size="lg">
-          {loading ? "Creando…" : "Crear cuenta"}
+          {loading ? t("auth.creating") : t("auth.createAccountBtn")}
         </Button>
       </form>
 
       <p className="text-center text-sm mt-6 text-muted-foreground">
-        ¿Ya tienes cuenta?{" "}
-        <Link to="/login" className="text-burnt-deep font-semibold hover:underline">Ingresa</Link>
+        {t("auth.haveAccount")}{" "}
+        <Link to="/login" className="text-burnt-deep font-semibold hover:underline">{t("auth.loginLink")}</Link>
       </p>
     </div>
   );

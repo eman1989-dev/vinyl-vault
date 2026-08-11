@@ -21,6 +21,8 @@ import {
 import { productsApi } from "@/services/api";
 import type { Product } from "@/types";
 import { formatCOP } from "@/lib/format";
+import { useLanguage, langName } from "@/context/LanguageContext";
+import type { Dict } from "@/i18n/es";
 
 interface ChatMessage {
   id: string;
@@ -28,24 +30,21 @@ interface ChatMessage {
   content: string;
 }
 
-const SUGGESTIONS = [
-  "Recomiéndame álbumes esenciales de jazz en vinilo",
-  "Discos para empezar a escuchar rock progresivo",
-  "Álbumes perfectos para escuchar de noche",
-  "Bandas que suenan como Radiohead",
-];
-
-const buildSystemPrompt = (catalog: string | null) => `
-Eres "Vinyl Advisor", el curador musical de Vinyls & More, una tienda costarricense especializada en vinilos, CDs y cassettes. Tu trabajo es recomendar música con pasión y conocimiento de coleccionista.
+const buildSystemPrompt = (
+  catalog: string | null,
+  t: (key: keyof Dict, vars?: Record<string, string | number>) => string,
+  langLabel: string
+) => `
+${t("ai.identity")}
 
 Normas:
-- Responde siempre en español, con tono cálido y cercano.
-- Recomienda álbumes, artistas y formatos concretos, explicando en una frase por qué vale la pena cada uno.
-- Si el catálogo de la tienda está disponible, prioriza esos discos cuando encajen con lo que pide la persona; usa precios en colones.
-- Adapta tus sugerencias al género, presupuesto o ánimo que pida la persona.
-- Ofrece entre 4 y 8 recomendaciones por mensaje; sé jugoso pero conciso.
-- Si no conoces un dato, dilo con honestidad en lugar de inventar.
-${catalog ? `\nCatálogo actual de Vinyls & More:\n${catalog}` : ""}
+- ${t("ai.ruleLang", { lang: langLabel })}
+${t("ai.rule1")}
+${t("ai.rule2")}
+${t("ai.rule3")}
+${t("ai.rule4")}
+${t("ai.rule5")}
+${catalog ? `\n${t("ai.catalogIntro")}:\n${catalog}` : ""}
 `.trim();
 
 const buildCatalog = (products: Product[]) =>
@@ -67,6 +66,14 @@ export default function AiRecommendationsPage() {
   const [catalog, setCatalog] = useState<string | null>(null);
   const [model, setModel] = useState(() => getGroqModel());
   const endRef = useRef<HTMLDivElement>(null);
+  const { t, lang } = useLanguage();
+
+  const suggestions = [
+    t("ai.suggestion1"),
+    t("ai.suggestion2"),
+    t("ai.suggestion3"),
+    t("ai.suggestion4"),
+  ];
 
   useEffect(() => {
     productsApi
@@ -83,9 +90,7 @@ export default function AiRecommendationsPage() {
     const content = (text ?? input).trim();
     if (!content || loading) return;
     if (!hasGroqApiKey()) {
-      setError(
-        "No hay clave de Groq configurada. Añade VITE_GROQ_API_KEY en tu archivo .env."
-      );
+      setError(t("ai.groqError"));
       return;
     }
 
@@ -97,7 +102,7 @@ export default function AiRecommendationsPage() {
     setError(null);
 
     const apiMessages: GroqMessage[] = [
-      { role: "system", content: buildSystemPrompt(catalog) },
+      { role: "system", content: buildSystemPrompt(catalog, t, langName(lang)) },
       ...updated.slice(-12).map((m) => ({ role: m.role, content: m.content })),
     ];
 
@@ -108,7 +113,7 @@ export default function AiRecommendationsPage() {
         { id: crypto.randomUUID(), role: "assistant", content: reply },
       ]);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "No se pudo conectar con la IA.");
+      setError(err instanceof Error ? err.message : t("ai.aiError"));
     } finally {
       setLoading(false);
     }
@@ -123,14 +128,13 @@ export default function AiRecommendationsPage() {
     <div className="container py-12 max-w-4xl">
       <header className="mb-8 text-center">
         <p className="inline-flex items-center gap-2 text-xs uppercase tracking-[0.25em] text-burnt mb-3">
-          <Sparkles className="h-3.5 w-3.5" /> Recomendador con IA
+          <Sparkles className="h-3.5 w-3.5" /> {t("ai.recommender")}
         </p>
         <h1 className="font-display text-4xl md:text-5xl text-brown-ink">
-          Pregúntale a <span className="italic text-burnt">Vinyl Advisor</span>
+          {t("ai.askTitle")} <span className="italic text-burnt">Vinyl Advisor</span>
         </h1>
         <p className="mt-3 font-serif-body italic text-muted-foreground max-w-xl mx-auto">
-          Cuéntale qué música te gusta o qué estás buscando y te recomendará discos,
-          artistas y formatos, priorizando lo que hay en nuestra tienda.
+          {t("ai.subtitle")}
         </p>
       </header>
 
@@ -151,7 +155,7 @@ export default function AiRecommendationsPage() {
               }}
             >
               <SelectTrigger className="h-9 w-auto gap-2 text-xs bg-background border-brown-ink/20">
-                <SelectValue placeholder="Modelo" />
+                <SelectValue placeholder={t("ai.model")} />
               </SelectTrigger>
               <SelectContent>
                 {GROQ_MODELS.map((m) => (
@@ -167,7 +171,7 @@ export default function AiRecommendationsPage() {
               className="text-muted-foreground hover:text-destructive"
               onClick={clearChat}
               disabled={messages.length === 0}
-              aria-label="Limpiar conversación"
+              aria-label={t("ai.clearChat")}
             >
               <Trash2 className="h-4 w-4" />
             </Button>
@@ -180,10 +184,10 @@ export default function AiRecommendationsPage() {
               <div className="text-center py-14">
                 <Music className="h-10 w-10 text-burnt/40 mx-auto mb-4" strokeWidth={1.2} />
                 <p className="font-display text-2xl text-brown-ink">
-                  ¿Qué disco deberías escuchar hoy?
+                  {t("ai.emptyTitle")}
                 </p>
                 <p className="mt-2 text-sm text-muted-foreground font-serif-body italic">
-                  Pregúntame por género, artista, época o simplemente tu estado de ánimo.
+                  {t("ai.emptySubtitle")}
                 </p>
               </div>
             ) : (
@@ -209,7 +213,7 @@ export default function AiRecommendationsPage() {
               <div className="flex justify-start">
                 <div className="max-w-[85%] rounded-md border border-brown-ink/10 bg-background px-4 py-3 text-muted-foreground flex items-center gap-2">
                   <Disc3Spinner />
-                  <span className="font-serif-body italic">Escribiendo una recomendación…</span>
+                  <span className="font-serif-body italic">{t("ai.writing")}</span>
                 </div>
               </div>
             )}
@@ -226,7 +230,7 @@ export default function AiRecommendationsPage() {
         <div className="border-t border-brown-ink/10 px-4 py-4">
           {messages.length === 0 && (
             <div className="mb-3 flex flex-wrap gap-2">
-              {SUGGESTIONS.map((s) => (
+              {suggestions.map((s) => (
                 <button
                   key={s}
                   onClick={() => sendMessage(s)}
@@ -240,7 +244,7 @@ export default function AiRecommendationsPage() {
           <div className="flex items-end gap-2">
             <Textarea
               rows={2}
-              placeholder="Ej: Recomiéndame jazz para empezar…"
+              placeholder={t("ai.placeholder")}
               value={input}
               maxLength={1000}
               onChange={(e) => setInput(e.target.value)}
@@ -256,13 +260,13 @@ export default function AiRecommendationsPage() {
               onClick={() => sendMessage()}
               disabled={loading || !input.trim()}
               className="h-[3.5rem] w-[3.5rem] shrink-0 bg-burnt hover:bg-burnt-deep press-shadow"
-              aria-label="Enviar mensaje"
+              aria-label={t("ai.send")}
             >
               <Send className="h-5 w-5" />
             </Button>
           </div>
           <p className="mt-2 text-xs text-muted-foreground">
-            Vinyl Advisor puede equivocarse; verifica los datos antes de comprar.
+            {t("ai.disclaimer")}
           </p>
         </div>
       </div>

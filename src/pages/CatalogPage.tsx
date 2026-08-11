@@ -8,11 +8,13 @@ import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Search, SlidersHorizontal } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useLanguage } from "@/context/LanguageContext";
 
 const FORMATS: Format[] = ["Vinyl", "CD", "Cassette"];
 const CONDITIONS: Condition[] = ["new", "used"];
 
 export default function CatalogPage() {
+  const { t } = useLanguage();
   const [params, setParams] = useSearchParams();
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
@@ -72,10 +74,12 @@ export default function CatalogPage() {
   return (
     <div className="container py-12">
       <header className="mb-10">
-        <p className="text-xs uppercase tracking-[0.25em] text-burnt mb-2">Catálogo completo</p>
-        <h1 className="font-display text-5xl text-brown-ink">Encuentra tu próxima joya</h1>
+        <p className="text-xs uppercase tracking-[0.25em] text-burnt mb-2">{t("catalog.title")}</p>
+        <h1 className="font-display text-5xl text-brown-ink">{t("catalog.heading")}</h1>
         <p className="mt-3 text-muted-foreground font-serif-body italic max-w-2xl">
-          {filtered.length} {filtered.length === 1 ? "artículo" : "artículos"} disponibles. Filtra por formato, género y estado.
+          {filtered.length === 1
+            ? t("catalog.resultsOne", { count: filtered.length })
+            : t("catalog.resultsMany", { count: filtered.length })}
         </p>
       </header>
 
@@ -85,14 +89,14 @@ export default function CatalogPage() {
           <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
-              placeholder="Buscar artista, álbum…"
+              placeholder={t("catalog.searchPlaceholder")}
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               className="pl-9 bg-card border-brown-ink/20"
             />
           </div>
 
-          <FilterGroup title="Formato">
+          <FilterGroup title={t("common.format")}>
             {FORMATS.map((f) => (
               <CheckRow
                 key={f} label={f}
@@ -102,17 +106,17 @@ export default function CatalogPage() {
             ))}
           </FilterGroup>
 
-          <FilterGroup title="Estado">
+          <FilterGroup title={t("common.condition")}>
             {CONDITIONS.map((c) => (
               <CheckRow
-                key={c} label={c === "new" ? "Nuevo" : "Usado"}
+                key={c} label={c === "new" ? t("common.new") : t("common.used")}
                 checked={conditions.includes(c)}
                 onChange={() => setConditions(toggle(conditions, c))}
               />
             ))}
           </FilterGroup>
 
-          <FilterGroup title="Género">
+          <FilterGroup title={t("common.genre")}>
             {allGenres.map((g) => (
               <CheckRow
                 key={g} label={g}
@@ -123,7 +127,7 @@ export default function CatalogPage() {
           </FilterGroup>
 
           <Button variant="outline" onClick={clearAll} className="w-full border-brown-ink/30">
-            <SlidersHorizontal className="h-4 w-4 mr-2" /> Limpiar filtros
+            <SlidersHorizontal className="h-4 w-4 mr-2" /> {t("catalog.clearFilters")}
           </Button>
         </aside>
 
@@ -137,9 +141,9 @@ export default function CatalogPage() {
             </div>
           ) : filtered.length === 0 ? (
             <div className="text-center py-24 border-2 border-dashed border-brown-ink/20">
-              <p className="font-display text-2xl text-brown-ink">Nada por aquí…</p>
+              <p className="font-display text-2xl text-brown-ink">{t("catalog.nothingHere")}</p>
               <p className="text-muted-foreground mt-2 font-serif-body italic">
-                Intenta con otros filtros o limpia la búsqueda.
+                {t("catalog.emptySubtitle")}
               </p>
             </div>
           ) : (

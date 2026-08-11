@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import type { Product } from "@/types";
 import { formatCOP } from "@/lib/format";
 import { Disc3, Disc, Radio } from "lucide-react";
+import { useLanguage } from "@/context/LanguageContext";
 
 const formatIcon = {
   Vinyl: Disc3,
@@ -11,6 +12,7 @@ const formatIcon = {
 
 export default function ProductCard({ product }: { product: Product }) {
   const Icon = formatIcon[product.format];
+  const { t } = useLanguage();
   return (
     <Link
       to={`/producto/${product._id}`}
@@ -30,7 +32,7 @@ export default function ProductCard({ product }: { product: Product }) {
           </span>
           {product.condition === "used" && (
             <span className="px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider bg-mustard text-brown-ink">
-              Usado
+              {t("common.used")}
             </span>
           )}
         </div>
@@ -46,9 +48,9 @@ export default function ProductCard({ product }: { product: Product }) {
         <div className="mt-3 flex items-end justify-between">
           <span className="font-display text-xl text-brown-ink">{formatCOP(product.price)}</span>
           {product.stock > 0 ? (
-            <span className="text-xs text-olive font-medium">En stock</span>
+            <span className="text-xs text-olive font-medium">{t("common.inStock")}</span>
           ) : (
-            <span className="text-xs text-destructive font-medium">Agotado</span>
+            <span className="text-xs text-destructive font-medium">{t("common.outOfStock")}</span>
           )}
         </div>
       </div>
