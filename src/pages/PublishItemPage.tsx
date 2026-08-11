@@ -81,7 +81,7 @@ export default function PublishItemPage() {
       <p className="text-xs uppercase tracking-[0.25em] text-burnt mb-2">{t("publish.newPublication")}</p>
       <h1 className="font-display text-4xl text-brown-ink mb-8">{t("publish.title")}</h1>
 
-      <form onSubmit={submit} className="space-y-5 bg-card border border-brown-ink/10 p-8">
+      <form onSubmit={submit} className="space-y-5 bg-card border border-brown-ink/10 p-5 sm:p-8">
         <div className="grid sm:grid-cols-2 gap-4">
           <div><Label>{t("publish.titleAlbum")}</Label><Input value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} maxLength={120} required /></div>
           <div><Label>{t("common.artist")}</Label><Input value={form.artist} onChange={(e) => setForm({ ...form, artist: e.target.value })} maxLength={120} required /></div>

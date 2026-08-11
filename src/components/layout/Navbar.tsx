@@ -1,10 +1,16 @@
 import { Link, NavLink, useNavigate } from "react-router-dom";
-import { Disc3, ShoppingBag, User as UserIcon, LogOut, ShieldCheck, Store, Moon, Sun, Sparkles, Languages } from "lucide-react";
+import { Disc3, ShoppingBag, User as UserIcon, LogOut, ShieldCheck, Store, Moon, Sun, Sparkles, Languages, Menu } from "lucide-react";
 import { useCart } from "@/context/CartContext";
 import { useAuth } from "@/context/AuthContext";
 import { useTheme } from "@/context/ThemeContext";
 import { useLanguage, LANGUAGES, langName } from "@/context/LanguageContext";
 import { Button } from "@/components/ui/button";
+import { useState } from "react";
+import {
+  Sheet,
+  SheetContent,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -20,11 +26,19 @@ export default function Navbar() {
   const { theme, toggle } = useTheme();
   const { lang, setLang, t } = useLanguage();
   const navigate = useNavigate();
+  const [menuOpen, setMenuOpen] = useState(false);
 
   const navLinkClass = ({ isActive }: { isActive: boolean }) =>
     `text-sm font-medium tracking-wide uppercase transition-colors ${
       isActive ? "text-burnt-deep" : "text-brown-ink/70 hover:text-burnt"
     }`;
+
+  const mobileNavLinkClass = ({ isActive }: { isActive: boolean }) =>
+    `flex items-center py-3.5 px-2 -mx-2 text-base font-medium tracking-wide uppercase transition-colors ${
+      isActive ? "text-burnt-deep bg-mustard/15" : "text-foreground/80 hover:text-burnt"
+    }`;
+
+  const closeMenu = () => setMenuOpen(false);
 
   return (
     <header className="sticky top-0 z-40 border-b border-brown-ink/15 bg-cream/85 backdrop-blur-md dark:bg-background/90 dark:border-border/20">
@@ -54,6 +68,81 @@ export default function Navbar() {
         </nav>
 
         <div className="flex items-center gap-2">
+          <Sheet open={menuOpen} onOpenChange={setMenuOpen}>
+            <SheetTrigger asChild>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="md:hidden text-foreground hover:bg-mustard/20"
+                aria-label={t("nav.menu")}
+              >
+                <Menu className="h-5 w-5" />
+              </Button>
+            </SheetTrigger>
+            <SheetContent side="left" className="w-80 bg-background">
+              <div className="flex items-center gap-2 mb-6">
+                <Disc3 className="h-7 w-7 text-burnt-deep" strokeWidth={1.5} />
+                <span className="font-display text-xl">Vinyls & More</span>
+              </div>
+              <nav className="divide-y divide-border/10 border-y border-border/10">
+                <NavLink to="/" end className={mobileNavLinkClass} onClick={closeMenu}>{t("nav.home")}</NavLink>
+                <NavLink to="/catalogo" className={mobileNavLinkClass} onClick={closeMenu}>{t("nav.catalog")}</NavLink>
+                <NavLink to="/segunda-mano" className={mobileNavLinkClass} onClick={closeMenu}>{t("nav.secondHand")}</NavLink>
+                <NavLink to="/recomendaciones" className={mobileNavLinkClass} onClick={closeMenu}>
+                  <span className="inline-flex items-center gap-1.5">
+                    <Sparkles className="h-4 w-4" /> {t("nav.recommendations")}
+                  </span>
+                </NavLink>
+                {user?.role === "seller" && (
+                  <NavLink to="/vendedor" className={mobileNavLinkClass} onClick={closeMenu}>{t("nav.myStore")}</NavLink>
+                )}
+                {user?.role === "admin" && (
+                  <NavLink to="/admin" className={mobileNavLinkClass} onClick={closeMenu}>{t("nav.admin")}</NavLink>
+                )}
+              </nav>
+
+              <div className="mt-8 pt-6 border-t border-border/20 space-y-3">
+                <p className="text-xs uppercase tracking-widest text-muted-foreground">{t("nav.chooseLanguage")}</p>
+                <div className="flex gap-2">
+                  {LANGUAGES.map((l) => (
+                    <Button
+                      key={l.code}
+                      variant={l.code === lang ? "default" : "outline"}
+                      size="sm"
+                      className={l.code === lang ? "bg-burnt hover:bg-burnt-deep" : "border-border/30 text-foreground"}
+                      onClick={() => setLang(l.code)}
+                    >
+                      {langName(l.code)}
+                    </Button>
+                  ))}
+                </div>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="border-border/30 text-foreground gap-2"
+                  onClick={toggle}
+                >
+                  {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+                  {t("nav.toggleTheme")}
+                </Button>
+                {user ? (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="border-border/30 text-foreground gap-2"
+                    onClick={() => { logout(); closeMenu(); navigate("/"); }}
+                  >
+                    <LogOut className="h-4 w-4" /> {t("nav.logout")}
+                  </Button>
+                ) : (
+                  <Button asChild size="sm" variant="default" className="w-full bg-burnt hover:bg-burnt-deep">
+                    <Link to="/login" onClick={closeMenu}>{t("nav.login")}</Link>
+                  </Button>
+                )}
+              </div>
+            </SheetContent>
+          </Sheet>
+
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" size="sm" className="text-foreground hover:bg-mustard/20 gap-1.5" aria-label={t("nav.chooseLanguage")}>

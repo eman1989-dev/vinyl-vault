@@ -79,7 +79,7 @@ export default function RegisterPage() {
         </p>
       </div>
 
-      <form onSubmit={submit} className="bg-card border border-brown-ink/10 p-8 space-y-5 vinyl-shadow">
+      <form onSubmit={submit} className="bg-card border border-brown-ink/10 p-6 sm:p-8 space-y-5 vinyl-shadow">
         <div>
           <Label>{t("auth.fullName")}</Label>
           <Input value={form.name} onChange={set("name")} maxLength={80} required />

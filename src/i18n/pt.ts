@@ -13,6 +13,7 @@ const pt: Dict = {
   "nav.logout": "Sair",
   "nav.login": "Entrar",
   "nav.cart": "Carrinho",
+  "nav.menu": "Menu",
   "nav.toggleTheme": "Alternar tema",
   "nav.chooseLanguage": "Idioma",
 
@@ -92,6 +93,7 @@ const pt: Dict = {
   "catalog.resultsOne": "{count} item disponível. Filtre por formato, gênero e condição.",
   "catalog.resultsMany": "{count} itens disponíveis. Filtre por formato, gênero e condição.",
   "catalog.searchPlaceholder": "Buscar artista, álbum…",
+  "catalog.filters": "Filtros",
   "catalog.clearFilters": "Limpar filtros",
   "catalog.nothingHere": "Nada por aqui…",
   "catalog.emptySubtitle": "Tente outros filtros ou limpe a busca.",

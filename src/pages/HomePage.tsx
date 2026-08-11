@@ -48,7 +48,7 @@ export default function HomePage() {
             <p className="inline-flex items-center gap-2 text-xs uppercase tracking-[0.25em] text-burnt-deep mb-6">
               <Sparkles className="h-3.5 w-3.5" /> {t("home.since")}
             </p>
-            <h1 className="font-display text-5xl md:text-7xl text-brown-ink leading-[0.95] text-balance">
+            <h1 className="font-display text-4xl sm:text-5xl md:text-7xl text-brown-ink leading-[0.95] text-balance">
               {t("home.title1")}<br />
               <span className="italic text-burnt">{t("home.title2")}</span><br />
               {t("home.title3")}
@@ -67,7 +67,7 @@ export default function HomePage() {
               </Button>
             </div>
 
-            <div className="mt-12 flex gap-8">
+            <div className="mt-12 flex flex-wrap gap-6 sm:gap-8">
               {stats.map((s) => (
                 <div key={s.l}>
                   <div className="font-display text-3xl text-brown-ink">{s.n}</div>

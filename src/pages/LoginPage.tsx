@@ -40,7 +40,7 @@ export default function LoginPage() {
         </p>
       </div>
 
-      <form onSubmit={submit} className="bg-card border border-brown-ink/10 p-8 space-y-5 vinyl-shadow">
+      <form onSubmit={submit} className="bg-card border border-brown-ink/10 p-6 sm:p-8 space-y-5 vinyl-shadow">
         <div>
           <Label>{t("common.email")}</Label>
           <Input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required maxLength={120} />

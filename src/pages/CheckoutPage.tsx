@@ -64,9 +64,9 @@ export default function CheckoutPage() {
 
   return (
     <div className="container py-12">
-      <h1 className="font-display text-5xl text-brown-ink mb-10">{t("checkout.title")}</h1>
+      <h1 className="font-display text-4xl md:text-5xl text-brown-ink mb-10">{t("checkout.title")}</h1>
       <form onSubmit={handleSubmit} className="grid lg:grid-cols-[1fr_360px] gap-10">
-        <div className="space-y-6 bg-card border border-brown-ink/10 p-8">
+        <div className="space-y-6 bg-card border border-brown-ink/10 p-5 sm:p-8">
           <h2 className="font-display text-2xl">{t("checkout.shippingAddress")}</h2>
           <div className="grid sm:grid-cols-2 gap-4">
             <div>

@@ -11,6 +11,7 @@ const es = {
   "nav.logout": "Salir",
   "nav.login": "Ingresar",
   "nav.cart": "Carrito",
+  "nav.menu": "Menú",
   "nav.toggleTheme": "Cambiar tema",
   "nav.chooseLanguage": "Idioma",
 
@@ -90,6 +91,7 @@ const es = {
   "catalog.resultsOne": "{count} artículo disponible. Filtra por formato, género y estado.",
   "catalog.resultsMany": "{count} artículos disponibles. Filtra por formato, género y estado.",
   "catalog.searchPlaceholder": "Buscar artista, álbum…",
+  "catalog.filters": "Filtros",
   "catalog.clearFilters": "Limpiar filtros",
   "catalog.nothingHere": "Nada por aquí…",
   "catalog.emptySubtitle": "Intenta con otros filtros o limpia la búsqueda.",

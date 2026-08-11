@@ -36,7 +36,7 @@ export default function Footer() {
         </div>
       </div>
       <div className="border-t border-cream/10">
-        <div className="container py-5 text-xs text-cream/50 flex justify-between">
+        <div className="container py-5 text-xs text-cream/50 flex flex-col sm:flex-row gap-2 sm:items-center sm:justify-between">
           <span>© {new Date().getFullYear()} Vinyls & More. {t("footer.rights")}</span>
           <span className="font-serif-body italic">Side A · Track 01</span>
         </div>

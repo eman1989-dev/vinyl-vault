@@ -25,7 +25,7 @@ export default function SecondHandPage() {
     <div className="container py-12">
       <header className="mb-10 max-w-2xl">
         <p className="text-xs uppercase tracking-[0.25em] text-burnt mb-2">{t("secondHand.marketplace")}</p>
-        <h1 className="font-display text-5xl text-brown-ink">{t("secondHand.title")}</h1>
+        <h1 className="font-display text-4xl md:text-5xl text-brown-ink">{t("secondHand.title")}</h1>
         <p className="mt-3 font-serif-body italic text-brown-ink/70">
           {t("secondHand.intro")}
         </p>

@@ -25,7 +25,7 @@ export default function SellerDashboardPage() {
       <header className="flex flex-wrap justify-between gap-4 items-end mb-10">
         <div>
           <p className="text-xs uppercase tracking-[0.25em] text-burnt mb-2">{t("seller.label")}</p>
-          <h1 className="font-display text-5xl text-brown-ink">{t("seller.myStore")}</h1>
+          <h1 className="font-display text-4xl md:text-5xl text-brown-ink">{t("seller.myStore")}</h1>
         </div>
         <Button asChild className="bg-burnt hover:bg-burnt-deep press-shadow">
           <Link to="/vendedor/publicar"><PlusCircle className="h-4 w-4 mr-2" />{t("common.publishItem")}</Link>
@@ -44,13 +44,13 @@ export default function SellerDashboardPage() {
       ) : (
         <div className="space-y-3">
           {submissions.map((s) => (
-            <article key={s._id} className="bg-card border border-brown-ink/10 p-4 flex gap-4 items-center">
-              <img src={s.realImages[0] || s.product?.images[0]} alt="" className="w-16 h-16 object-cover bg-cream-deep" />
-              <div className="flex-1">
-                <p className="font-display text-lg text-brown-ink">{s.product?.title ?? t("common.item")}</p>
+            <article key={s._id} className="bg-card border border-brown-ink/10 p-4 flex flex-wrap gap-4 items-center">
+              <img src={s.realImages[0] || s.product?.images[0]} alt="" className="w-14 h-14 sm:w-16 sm:h-16 object-cover bg-cream-deep" />
+              <div className="flex-1 min-w-[180px]">
+                <p className="font-display text-base sm:text-lg text-brown-ink">{s.product?.title ?? t("common.item")}</p>
                 <p className="text-sm text-muted-foreground italic">{s.conditionDetails}</p>
               </div>
-              <div className="text-right">
+              <div className="text-left sm:text-right">
                 {s.approved ? (
                   <span className="inline-flex items-center gap-1 text-xs text-olive font-semibold uppercase">
                     <CheckCircle2 className="h-3.5 w-3.5" /> {t("common.approved")}

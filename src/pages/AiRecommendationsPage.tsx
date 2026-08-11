@@ -140,9 +140,9 @@ export default function AiRecommendationsPage() {
 
       <div className="bg-card border border-brown-ink/10 vinyl-shadow overflow-hidden">
         <div className="flex items-center justify-between gap-3 border-b border-brown-ink/10 px-4 py-3">
-          <div className="flex items-center gap-2">
-            <Bot className="h-5 w-5 text-burnt" />
-            <span className="text-sm font-semibold uppercase tracking-widest text-brown-ink">
+          <div className="flex items-center gap-2 min-w-0">
+            <Bot className="h-5 w-5 text-burnt shrink-0" />
+            <span className="hidden sm:inline text-sm font-semibold uppercase tracking-widest text-brown-ink">
               Vinyl Advisor
             </span>
           </div>
@@ -154,7 +154,7 @@ export default function AiRecommendationsPage() {
                 setGroqModel(v);
               }}
             >
-              <SelectTrigger className="h-9 w-auto gap-2 text-xs bg-background border-brown-ink/20">
+              <SelectTrigger className="h-9 w-auto gap-2 text-xs bg-background border-brown-ink/20 max-w-[12rem]">
                 <SelectValue placeholder={t("ai.model")} />
               </SelectTrigger>
               <SelectContent>

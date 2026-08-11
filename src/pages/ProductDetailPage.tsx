@@ -65,7 +65,7 @@ export default function ProductDetailPage() {
 
   return (
     <div className="container py-12">
-      <div className="grid md:grid-cols-2 gap-12">
+      <div className="grid md:grid-cols-2 gap-8 md:gap-12">
         <div className="bg-cream-deep border border-brown-ink/10 vinyl-shadow">
           <div className="aspect-square overflow-hidden">
             <img src={product.imageUrl} alt={product.title} className="h-full w-full object-cover" />
@@ -74,7 +74,7 @@ export default function ProductDetailPage() {
 
         <div>
           <p className="text-xs uppercase tracking-[0.25em] text-burnt mb-2">{product.format} · {product.year}</p>
-          <h1 className="font-display text-5xl text-brown-ink leading-tight">{product.title}</h1>
+          <h1 className="font-display text-3xl sm:text-4xl md:text-5xl text-brown-ink leading-tight">{product.title}</h1>
           <p className="mt-2 font-serif-body italic text-2xl text-brown-ink/80">{product.artist}</p>
 
           <div className="mt-4 flex items-center gap-3">
@@ -105,8 +105,8 @@ export default function ProductDetailPage() {
             </p>
           </div>
 
-          <div className="mt-6 flex items-center gap-4">
-            <div className="flex items-center border border-brown-ink/30">
+          <div className="mt-6 flex flex-col sm:flex-row items-stretch sm:items-center gap-4">
+            <div className="flex items-center justify-center sm:justify-start border border-brown-ink/30 self-center">
               <button onClick={() => setQty(Math.max(1, qty - 1))} className="p-3 hover:bg-mustard/20" aria-label={t("productDetail.decrease")}>
                 <Minus className="h-4 w-4" />
               </button>
@@ -119,7 +119,7 @@ export default function ProductDetailPage() {
               size="lg"
               onClick={handleAdd}
               disabled={product.stock === 0}
-              className="flex-1 bg-burnt hover:bg-burnt-deep press-shadow"
+              className="w-full sm:w-auto sm:flex-1 bg-burnt hover:bg-burnt-deep press-shadow"
             >
               <ShoppingBag className="h-4 w-4 mr-2" /> {t("productDetail.addToCart")}
             </Button>

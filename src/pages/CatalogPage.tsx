@@ -19,6 +19,7 @@ export default function CatalogPage() {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [approvedSecondHandIds, setApprovedSecondHandIds] = useState<Set<string>>(new Set());
+  const [filtersOpen, setFiltersOpen] = useState(false);
   const [query, setQuery] = useState(params.get("q") || "");
   const [formats, setFormats] = useState<Format[]>(
     (params.get("format")?.split(",").filter(Boolean) as Format[]) || []
@@ -75,7 +76,7 @@ export default function CatalogPage() {
     <div className="container py-12">
       <header className="mb-10">
         <p className="text-xs uppercase tracking-[0.25em] text-burnt mb-2">{t("catalog.title")}</p>
-        <h1 className="font-display text-5xl text-brown-ink">{t("catalog.heading")}</h1>
+        <h1 className="font-display text-4xl md:text-5xl text-brown-ink">{t("catalog.heading")}</h1>
         <p className="mt-3 text-muted-foreground font-serif-body italic max-w-2xl">
           {filtered.length === 1
             ? t("catalog.resultsOne", { count: filtered.length })
@@ -84,8 +85,21 @@ export default function CatalogPage() {
       </header>
 
       <div className="grid lg:grid-cols-[260px_1fr] gap-10">
+        {/* Toggle de filtros en móvil */}
+        <div className="lg:hidden mb-2">
+          <Button
+            variant="outline"
+            onClick={() => setFiltersOpen((o) => !o)}
+            className="w-full border-brown-ink/30 bg-card"
+          >
+            <SlidersHorizontal className="h-4 w-4 mr-2" />
+            {t("catalog.filters")}
+            <span className="ml-auto">{filtersOpen ? "−" : "+"}</span>
+          </Button>
+        </div>
+
         {/* Filtros */}
-        <aside className="space-y-8">
+        <aside className={`space-y-8 ${filtersOpen ? "block" : "hidden lg:block"}`}>
           <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input

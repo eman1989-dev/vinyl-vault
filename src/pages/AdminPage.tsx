@@ -142,7 +142,7 @@ export default function AdminPage() {
       <p className="text-xs uppercase tracking-[0.25em] text-burnt mb-2">
         {t("admin.administration")}
       </p>
-      <h1 className="font-display text-5xl text-brown-ink mb-2">
+      <h1 className="font-display text-4xl md:text-5xl text-brown-ink mb-2">
         {t("admin.dashboard")}
       </h1>
 
@@ -158,13 +158,15 @@ export default function AdminPage() {
       </div>
 
       <Tabs defaultValue="orders">
-        <TabsList className="bg-cream-deep">
-          <TabsTrigger value="orders">{t("admin.tabOrders")}</TabsTrigger>
-          <TabsTrigger value="products">{t("admin.tabProducts")}</TabsTrigger>
-          <TabsTrigger value="new-product">{t("admin.tabNewProduct")}</TabsTrigger>
-          <TabsTrigger value="submissions">{t("admin.tabSecondHand")}</TabsTrigger>
-          <TabsTrigger value="users">{t("admin.tabUsers")}</TabsTrigger>
-        </TabsList>
+        <div className="overflow-x-auto -mx-4 px-4 pb-1">
+          <TabsList className="bg-cream-deep w-max">
+            <TabsTrigger value="orders">{t("admin.tabOrders")}</TabsTrigger>
+            <TabsTrigger value="products">{t("admin.tabProducts")}</TabsTrigger>
+            <TabsTrigger value="new-product">{t("admin.tabNewProduct")}</TabsTrigger>
+            <TabsTrigger value="submissions">{t("admin.tabSecondHand")}</TabsTrigger>
+            <TabsTrigger value="users">{t("admin.tabUsers")}</TabsTrigger>
+          </TabsList>
+        </div>
 
         {/* ================= PEDIDOS ================= */}
         <TabsContent value="orders" className="mt-6 space-y-3">

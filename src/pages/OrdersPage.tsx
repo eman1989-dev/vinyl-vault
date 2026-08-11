@@ -35,7 +35,7 @@ export default function OrdersPage() {
     <div className="container py-12">
       <header className="mb-10">
         <p className="text-xs uppercase tracking-[0.25em] text-burnt mb-2">{t("orders.yourHistory")}</p>
-        <h1 className="font-display text-5xl text-brown-ink">{t("orders.myOrders")}</h1>
+        <h1 className="font-display text-4xl md:text-5xl text-brown-ink">{t("orders.myOrders")}</h1>
       </header>
 
       {newOrderId && (
